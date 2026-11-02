@@ -1,16 +1,22 @@
 /*
- * UsersController — Profile endpoints
- *
- * 🔑 NestJS Concept: PATCH & Partial Updates
- * In Next.js App Router, you'd handle PATCH in `app/api/users/me/profile/route.ts`.
- * Here, `@Patch('me/profile')` maps to PATCH /api/v1/users/me/profile.
- * `@UseGuards(JwtAuthGuard)` protects the route.
- * `@CurrentUser()` injects the authenticated user.
+ * UsersController — Profile & Account Management
  */
-import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Delete,
+  Body,
+  UseGuards,
+  Res,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
@@ -41,5 +47,30 @@ export class UsersController {
       message: 'Profile updated successfully',
       profile,
     };
+  }
+
+  @Patch('me/password')
+  @ApiOperation({ summary: 'Change current user password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 400, description: 'Current password invalid' })
+  async changePassword(
+    @CurrentUser() user: any,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    return this.usersService.changePassword(user.id, dto);
+  }
+
+  @Delete('me')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Permanently delete user account and all documents' })
+  @ApiResponse({ status: 200, description: 'Account deleted' })
+  async deleteAccount(
+    @CurrentUser() user: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.usersService.deleteAccount(user.id);
+    // Clear auth cookie
+    res.clearCookie('access_token', { path: '/' });
+    return result;
   }
 }

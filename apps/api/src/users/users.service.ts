@@ -1,16 +1,11 @@
 /*
  * UsersService — User and Profile Query Service
- *
- * 🔑 NestJS Concept: Dependency Injection (DI)
- * Look at the constructor:
- *   constructor(private prisma: PrismaService) {}
- *
- * We don't do `new PrismaService()`. NestJS automatically injects the single
- * PrismaService instance when UsersService is initialized!
  */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -51,7 +46,6 @@ export class UsersService {
       where: { userId },
     });
     if (!profile) {
-      // Auto-create blank profile if not present
       return this.prisma.profile.create({
         data: { userId },
       });
@@ -68,5 +62,34 @@ export class UsersService {
         ...data,
       },
     });
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const matches = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!matches) {
+      throw new BadRequestException('Current password does not match our records');
+    }
+
+    const newHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newHash },
+    });
+
+    return { message: 'Password updated successfully' };
+  }
+
+  async deleteAccount(userId: string) {
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+    return { message: 'Your account and all associated data have been permanently deleted.' };
   }
 }

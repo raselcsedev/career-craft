@@ -65,11 +65,22 @@
 - [x] Public portfolio routes (`/p/[slug]`) for visitors without authentication
 - [x] Unit tests for Portfolios module (36/36 tests passing)
 
-## Phase 6 — Administration and Product Polish 🔄
-- [ ] Admin guard & authorization check (`Role.ADMIN`)
-- [ ] Admin endpoints for managing template metadata and active/inactive status
-- [ ] Account settings: change password, account summary, and account deletion workflow
-- [ ] Responsive UI refinements and polished empty/loading/error states
+## Phase 6 — Administration and Product Polish ✅
+- [x] Admin guard & authorization check (`RolesGuard`, `@Roles(Role.ADMIN)`)
+- [x] Admin endpoints for system metrics (`GET /api/v1/admin/stats`)
+- [x] Template availability control (`PATCH /api/v1/admin/cv-templates/:id`, `PATCH /api/v1/admin/portfolio-templates/:id`)
+- [x] Account settings: change password (`PATCH /api/v1/users/me/password`)
+- [x] Danger zone: permanent account deletion with cascade (`DELETE /api/v1/users/me`)
+- [x] Frontend Account Settings screen (`/dashboard/settings`)
+- [x] Frontend Admin Control Center (`/dashboard/admin`) with role check
+- [x] Unit tests for Admin module & security features (40/40 tests passing)
+
+## Phase 7 & 8 — Testing, Security Audit & Final Documentation 🔄
+- [ ] Run full automated test suite (Unit + E2E)
+- [ ] Verify TypeScript and build checks across both web and api
+- [ ] Comprehensive API documentation (`docs/api.md`)
+- [ ] Deployment and operations guide (`docs/setup.md` & `README.md`)
+- [ ] Final end-to-end verification report
 
 ## Phase 7 — Testing & Security
 - [ ] Backend tests

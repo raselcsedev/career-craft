@@ -10,20 +10,14 @@ import {
   FileText,
   Globe,
   User,
+  Settings,
+  ShieldCheck,
   LogOut,
   Menu,
   X,
-  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
-
-const NAV_ITEMS = [
-  { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'My CVs', href: '/dashboard/cvs', icon: FileText },
-  { label: 'Portfolios', href: '/dashboard/portfolios', icon: Globe },
-  { label: 'Profile', href: '/dashboard/profile', icon: User },
-];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -58,6 +52,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       ? `${user.profile.firstName} ${user.profile.lastName}`
       : user.email.split('@')[0];
 
+  const navItems = [
+    { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+    { label: 'My CVs', href: '/dashboard/cvs', icon: FileText },
+    { label: 'Portfolios', href: '/dashboard/portfolios', icon: Globe },
+    { label: 'Profile', href: '/dashboard/profile', icon: User },
+    { label: 'Settings', href: '/dashboard/settings', icon: Settings },
+  ];
+
+  if (user.role === 'ADMIN') {
+    navItems.push({ label: 'Admin Panel', href: '/dashboard/admin', icon: ShieldCheck });
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Mobile Top Bar */}
@@ -86,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Brand */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-sm shadow-indigo-100">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-xs shadow-indigo-100">
               <Sparkles className="w-4 h-4" />
             </div>
             <span className="font-bold text-lg text-gray-900">CareerCraft</span>
@@ -101,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
             const Icon = item.icon;
             return (
@@ -117,7 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 )}
               >
                 <Icon className={cn('w-4 h-4', isActive ? 'text-indigo-600' : 'text-gray-400')} />
-                {item.label}
+                <span>{item.label}</span>
               </Link>
             );
           })}

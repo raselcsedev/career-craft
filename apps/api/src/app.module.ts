@@ -10,6 +10,7 @@ import { CvTemplatesModule } from './cv-templates/cv-templates.module';
 import { CvsModule } from './cvs/cvs.module';
 import { PortfolioTemplatesModule } from './portfolio-templates/portfolio-templates.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
+import { AdminModule } from './admin/admin.module';
 import { HealthController } from './health/health.controller';
 
 @Module({
@@ -24,6 +25,7 @@ import { HealthController } from './health/health.controller';
     CvsModule,
     PortfolioTemplatesModule,
     PortfoliosModule,
+    AdminModule,
   ],
   controllers: [HealthController],
   providers: [],
