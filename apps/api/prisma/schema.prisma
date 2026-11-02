@@ -1,0 +1,15 @@
+// Prisma schema — Phase 1 (minimal, will grow in Phase 2)
+// This defines your database tables using Prisma's schema language.
+// Each `model` becomes a MySQL table.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// We'll add User, Profile, Cv, Portfolio models in Phase 2.
+// For now, this validates the database connection.
