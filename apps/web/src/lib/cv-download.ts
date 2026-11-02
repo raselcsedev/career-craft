@@ -37,10 +37,15 @@ export async function downloadCvAsPdf(
   previewElementId: string,
   filename = 'resume.pdf',
 ): Promise<void> {
-  const [{ toJpeg }, { default: jsPDF }] = await Promise.all([
+  const [htmlToImage, jspdfModule] = await Promise.all([
     import('html-to-image'),
     import('jspdf'),
   ]);
+
+  const toPng = htmlToImage.toPng || (htmlToImage as any).default?.toPng;
+  const toJpeg = htmlToImage.toJpeg || (htmlToImage as any).default?.toJpeg;
+  const JsPdfClass =
+    (jspdfModule as any).jsPDF || (jspdfModule as any).default || jspdfModule;
 
   const element = document.getElementById(previewElementId);
   if (!element) {
@@ -48,16 +53,27 @@ export async function downloadCvAsPdf(
   }
 
   // Find the CV template element itself (inner clean white page)
-  const cvPage = (element.querySelector<HTMLElement>('.cv-printable-page') || element);
+  const cvPage = element.querySelector<HTMLElement>('.cv-printable-page') || element;
 
-  // Capture using html-to-image which natively renders all modern CSS
-  // (oklab, oklch, modern fonts, flexbox/grid) through browser foreignObject
-  const dataUrl = await toJpeg(cvPage, {
-    quality: 0.98,
-    backgroundColor: '#ffffff',
-    pixelRatio: 2, // 2x DPI for ultra-crisp text rendering
-    cacheBust: true,
-  });
+  // Capture using html-to-image (skipFonts prevents cross-origin stylesheet errors)
+  let dataUrl: string;
+  try {
+    dataUrl = await toPng(cvPage, {
+      backgroundColor: '#ffffff',
+      pixelRatio: 2,
+      skipFonts: true,
+      cacheBust: false,
+    });
+  } catch (err) {
+    console.warn('html-to-image toPng failed, trying toJpeg:', err);
+    dataUrl = await toJpeg(cvPage, {
+      quality: 0.95,
+      backgroundColor: '#ffffff',
+      pixelRatio: 1.5,
+      skipFonts: true,
+      cacheBust: false,
+    });
+  }
 
   // Load into Image to calculate exact dimensions
   const img = new Image();
@@ -67,7 +83,7 @@ export async function downloadCvAsPdf(
     img.onerror = () => reject(new Error('Failed to rasterize CV preview image'));
   });
 
-  const pdf = new jsPDF({
+  const pdf = new JsPdfClass({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
@@ -107,7 +123,9 @@ export async function downloadCvAsPdf(
     pdf.addImage(pageDataUrl, 'JPEG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM);
   }
 
-  pdf.save(filename);
+  // Use HTML5 anchor blob download (proven to work on all browsers)
+  const pdfBlob = pdf.output('blob');
+  downloadBlob(pdfBlob, filename);
 }
 
 // ── DOCX Download ─────────────────────────────────────────────────────────────

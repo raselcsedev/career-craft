@@ -138,8 +138,8 @@ export default function PortfoliosDashboardPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Personal Portfolios</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Personal Portfolios</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Build and publish personal developer or design portfolio websites with unique URLs.
           </p>
         </div>
@@ -157,18 +157,18 @@ export default function PortfoliosDashboardPage() {
       {/* Loading state */}
       {loading ? (
         <div className="text-center py-20 space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto" />
-          <p className="text-sm text-gray-500">Loading your portfolios...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-[#005A9C] dark:text-[#60C1E5] mx-auto" />
+          <p className="text-sm text-slate-500 dark:text-slate-400">Loading your portfolios...</p>
         </div>
       ) : portfolios.length === 0 ? (
         /* Empty State */
-        <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+        <div className="bg-white dark:bg-[#101f38] rounded-2xl border-2 border-dashed border-slate-200 dark:border-[#1B365D] p-12 text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#A0E0EF]/20 text-[#005A9C] dark:text-[#60C1E5] flex items-center justify-center mx-auto">
             <Globe className="w-6 h-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-lg font-bold text-gray-900">No Portfolios Published Yet</h3>
-            <p className="text-sm text-gray-500 max-w-md mx-auto">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">No Portfolios Published Yet</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
               Select one of the 6 portfolio designs, showcase your projects, and share your unique public link with
               recruiters.
             </p>
@@ -185,13 +185,13 @@ export default function PortfoliosDashboardPage() {
         /* Portfolio List Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {portfolios.map((port) => (
-            <Card key={port.id} className="hover:border-indigo-200 hover:shadow-md transition-all flex flex-col justify-between">
+            <Card key={port.id} className="hover:border-[#005A9C] dark:hover:border-[#60C1E5] hover:shadow-md transition-all flex flex-col justify-between">
               <CardContent className="pt-6 space-y-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
-                    <h3 className="font-bold text-gray-900 text-lg line-clamp-1">{port.title}</h3>
-                    <p className="text-xs text-gray-500 font-mono flex items-center gap-1">
-                      <Globe className="w-3.5 h-3.5 text-gray-400" />
+                    <h3 className="font-bold text-slate-900 dark:text-white text-lg line-clamp-1">{port.title}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1">
+                      <Globe className="w-3.5 h-3.5 text-slate-400" />
                       <span>/p/{port.slug}</span>
                     </p>
                   </div>
@@ -200,8 +200,8 @@ export default function PortfoliosDashboardPage() {
                   </Badge>
                 </div>
 
-                <div className="pt-2 flex items-center gap-2 text-xs text-gray-500">
-                  <span className="px-2 py-0.5 rounded bg-gray-100 font-medium">
+                <div className="pt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-navy-900/60 dark:text-slate-300 font-medium">
                     {port.template?.name || 'Standard Theme'}
                   </span>
                   <span>•</span>
@@ -209,7 +209,7 @@ export default function PortfoliosDashboardPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="pt-4 border-t border-gray-100 space-y-2">
+                <div className="pt-4 border-t border-slate-100 dark:border-[#1B365D] space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <Link href={`/dashboard/portfolios/${port.id}`}>
                       <Button variant="outline" size="sm" className="w-full" leftIcon={<Edit3 className="w-3.5 h-3.5" />}>
@@ -231,7 +231,7 @@ export default function PortfoliosDashboardPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex-1 text-xs text-gray-500 hover:text-gray-900"
+                      className="flex-1 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       onClick={() => copyUrl(port.slug)}
                       leftIcon={copiedSlug === port.slug ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     >
@@ -243,7 +243,7 @@ export default function PortfoliosDashboardPage() {
                         href={`/p/${port.slug}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="p-2 text-slate-400 hover:text-[#005A9C] dark:hover:text-[#60C1E5] rounded-lg hover:bg-slate-50 dark:hover:bg-navy-900/40 transition-colors"
                         title="View Public Website"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -252,7 +252,7 @@ export default function PortfoliosDashboardPage() {
 
                     <button
                       onClick={() => setPortfolioToDelete(port)}
-                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                      className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
                       title="Delete Portfolio"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -267,13 +267,13 @@ export default function PortfoliosDashboardPage() {
 
       {/* Create Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 space-y-5 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900">Create New Portfolio</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#101f38] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-[#1B365D] space-y-5 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#1B365D]">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Create New Portfolio</h2>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-navy-900/50"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -301,9 +301,9 @@ export default function PortfoliosDashboardPage() {
               />
 
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-gray-700">Public Slug URL</label>
-                <div className="flex items-center rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500 focus-within:border-indigo-500 focus-within:bg-white focus-within:ring-1 focus-within:ring-indigo-500">
-                  <span className="text-gray-400 select-none">careercraft.com/p/</span>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Public Slug URL</label>
+                <div className="flex items-center rounded-lg border border-slate-300 dark:border-[#1B365D] bg-slate-50 dark:bg-[#0b1526] px-3 py-2 text-sm text-slate-500 dark:text-slate-400 focus-within:border-[#005A9C] dark:focus-within:border-[#60C1E5] focus-within:bg-white dark:focus-within:bg-[#0b1526] focus-within:ring-1 focus-within:ring-[#005A9C]">
+                  <span className="text-slate-400 select-none">careercraft.com/p/</span>
                   <input
                     type="text"
                     value={newSlug}
@@ -316,16 +316,16 @@ export default function PortfoliosDashboardPage() {
                       )
                     }
                     placeholder="my-portfolio"
-                    className="w-full bg-transparent text-gray-900 font-mono font-medium focus:outline-none pl-0.5"
+                    className="w-full bg-transparent text-slate-900 dark:text-slate-100 font-mono font-medium focus:outline-none pl-0.5"
                     required
                   />
                 </div>
-                <p className="text-xs text-gray-400">Lowercase letters, numbers, and hyphens only.</p>
+                <p className="text-xs text-slate-400">Lowercase letters, numbers, and hyphens only.</p>
               </div>
 
               {/* Template Selection */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Choose Initial Design</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Choose Initial Design</label>
                 <div className="grid grid-cols-2 gap-2.5 max-h-48 overflow-y-auto p-1">
                   {templates.map((tmpl) => (
                     <div
@@ -333,18 +333,18 @@ export default function PortfoliosDashboardPage() {
                       onClick={() => setSelectedTemplateId(tmpl.slug)}
                       className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                         selectedTemplateId === tmpl.slug
-                          ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-600/20'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-[#005A9C] dark:border-[#60C1E5] bg-[#A0E0EF]/20 dark:bg-[#005A9C]/25 ring-2 ring-[#005A9C]/30'
+                          : 'border-slate-200 dark:border-navy-700 bg-white dark:bg-navy-900/30 hover:border-slate-300 dark:hover:border-navy-600'
                       }`}
                     >
-                      <p className="text-xs font-bold text-gray-900">{tmpl.name}</p>
-                      <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{tmpl.description}</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{tmpl.name}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">{tmpl.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-[#1B365D]">
                 <Button
                   type="button"
                   variant="outline"
@@ -363,11 +363,11 @@ export default function PortfoliosDashboardPage() {
 
       {/* Delete Confirmation Modal */}
       {portfolioToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 border border-gray-100 shadow-xl">
-            <h3 className="font-bold text-gray-900 text-lg">Delete Portfolio?</h3>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Are you sure you want to delete <span className="font-semibold text-gray-900">{portfolioToDelete.title}</span>?
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#101f38] rounded-2xl max-w-sm w-full p-6 space-y-4 border border-slate-100 dark:border-[#1B365D] shadow-xl">
+            <h3 className="font-bold text-slate-900 dark:text-white text-lg">Delete Portfolio?</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Are you sure you want to delete <span className="font-semibold text-slate-900 dark:text-white">{portfolioToDelete.title}</span>?
               Its public URL will stop resolving immediately.
             </p>
             <div className="flex items-center justify-end gap-3 pt-2">

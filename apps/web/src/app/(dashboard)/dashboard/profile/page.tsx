@@ -108,8 +108,8 @@ export default function ProfileManagementPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Profile Management</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Profile Management</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Update your personal details once. All changes automatically sync to your CVs and published portfolios.
         </p>
       </div>
@@ -154,14 +154,14 @@ export default function ProfileManagementPage() {
             />
 
             <div className="space-y-1.5">
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="bio" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Professional Bio / Summary
               </label>
               <textarea
                 id="bio"
                 rows={4}
                 placeholder="Briefly describe your career background, core competencies, and career objectives..."
-                className="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-[#1B365D] bg-white dark:bg-[#0b1526] px-3.5 py-2 text-sm text-slate-900 dark:text-slate-100 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-[#005A9C] dark:focus:border-[#60C1E5] focus:outline-none focus:ring-1 focus:ring-[#005A9C]"
                 {...register('bio')}
               />
             </div>

@@ -224,24 +224,23 @@ export default function HomePage() {
 
             <Card className="hover:shadow-md transition-shadow">
               <CardContent className="pt-6 space-y-3">
-                <div className="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[#A0E0EF]/25 dark:bg-[#005A9C]/25 text-[#005A9C] dark:text-[#60C1E5] flex items-center justify-center">
                   <Download className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-lg text-gray-900">Real PDF Downloads</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  Export high-fidelity, selectable, printable PDFs with clean margins and ATS-conscious layouts ready for
-                  job portals.
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Real PDF &amp; Word Downloads</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Export high-fidelity, selectable, printable PDFs and editable Word DOCX files with clean margins and ATS-conscious layouts.
                 </p>
               </CardContent>
             </Card>
 
             <Card className="hover:shadow-md transition-shadow">
               <CardContent className="pt-6 space-y-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[#A0E0EF]/25 dark:bg-[#005A9C]/25 text-[#005A9C] dark:text-[#60C1E5] flex items-center justify-center">
                   <Globe className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-lg text-gray-900">Public Portfolio Websites</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Public Portfolio Websites</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                   Claim your unique slug (e.g. <code>/p/alex</code>) and publish your project portfolio. Accessible to
                   anyone without login.
                 </p>
@@ -252,15 +251,15 @@ export default function HomePage() {
       </section>
 
       {/* CV Templates Showcase */}
-      <section id="cv-templates" className="py-20 bg-white">
+      <section id="cv-templates" className="py-20 bg-white dark:bg-[#0b1526] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
-              <h2 className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">CV Templates</h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900">
+              <h2 className="text-xs font-semibold text-[#005A9C] dark:text-[#60C1E5] uppercase tracking-wider">CV Templates</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                 6 Distinct, Production-Tested Layouts
               </p>
-              <p className="mt-2 text-gray-500 text-sm">
+              <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm">
                 Switch templates anytime with one click — your CV content is always preserved.
               </p>
             </div>
@@ -276,12 +275,12 @@ export default function HomePage() {
               <Card key={tmpl.slug} className={`border-t-4 ${tmpl.accent} hover:shadow-lg transition-all`}>
                 <CardContent className="pt-6 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900">{tmpl.name}</h3>
+                    <h3 className="font-bold text-slate-900 dark:text-white">{tmpl.name}</h3>
                     <Badge variant="neutral">{tmpl.tag}</Badge>
                   </div>
-                  <p className="text-sm text-gray-500">{tmpl.desc}</p>
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-indigo-600 font-medium">
-                    <span>Includes PDF Export</span>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{tmpl.desc}</p>
+                  <div className="pt-4 border-t border-slate-100 dark:border-[#1B365D] flex items-center justify-between text-xs text-[#005A9C] dark:text-[#60C1E5] font-medium">
+                    <span>Includes PDF &amp; DOCX Export</span>
                     <Link href="/register" className="hover:underline flex items-center gap-1">
                       Start with this →
                     </Link>
@@ -294,28 +293,28 @@ export default function HomePage() {
       </section>
 
       {/* Portfolio Templates Showcase */}
-      <section id="portfolio-templates" className="py-20 bg-gray-50/60 border-t border-gray-100">
+      <section id="portfolio-templates" className="py-20 bg-slate-50/60 dark:bg-[#0d1726] border-t border-slate-200/80 dark:border-[#1B365D] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Portfolio Builder</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <h2 className="text-xs font-semibold text-[#005A9C] dark:text-[#60C1E5] uppercase tracking-wider">Portfolio Builder</h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
               Turn Your Profile Into a Live Personal Website
             </p>
-            <p className="mt-4 text-gray-600">
+            <p className="mt-4 text-slate-600 dark:text-slate-400">
               Pick a design, customize theme colors, add projects, and publish with a unique link.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {PORTFOLIO_TEMPLATES.map((tmpl) => (
-              <Card key={tmpl.name} className="hover:border-indigo-200 hover:shadow-md transition-all">
+              <Card key={tmpl.name} className="hover:border-[#005A9C] dark:hover:border-[#60C1E5] hover:shadow-md transition-all">
                 <CardContent className="pt-6 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900">{tmpl.name}</h3>
+                    <h3 className="font-bold text-slate-900 dark:text-white">{tmpl.name}</h3>
                     <Badge variant="default">{tmpl.badge}</Badge>
                   </div>
-                  <p className="text-sm text-gray-500">{tmpl.desc}</p>
-                  <div className="pt-3 text-xs text-gray-400">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{tmpl.desc}</p>
+                  <div className="pt-3 text-xs text-slate-400 dark:text-slate-500">
                     Ready for custom domain &amp; public slug
                   </div>
                 </CardContent>
@@ -326,17 +325,17 @@ export default function HomePage() {
       </section>
 
       {/* CTA Banner */}
-      <section className="py-16 bg-indigo-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-[#1B365D] via-[#005A9C] to-[#1B365D] text-white shadow-xl border-y border-[#005A9C]/40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Ready to Take Your Career to the Next Level?
           </h2>
-          <p className="text-indigo-100 max-w-2xl mx-auto text-base sm:text-lg">
+          <p className="text-[#A0E0EF] max-w-2xl mx-auto text-base sm:text-lg">
             Create an account in 30 seconds. Start crafting your professional CV and personal website today.
           </p>
           <div className="pt-4 flex items-center justify-center gap-4">
             <Link href="/register">
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100 shadow-md">
+              <Button size="lg" className="bg-white text-[#1B365D] hover:bg-[#A0E0EF] hover:text-[#1B365D] font-bold shadow-md border-none">
                 Create Free Account
               </Button>
             </Link>

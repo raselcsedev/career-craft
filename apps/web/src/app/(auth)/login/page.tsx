@@ -53,37 +53,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50/50 via-white to-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#A0E0EF]/15 via-white to-slate-50 dark:from-[#0b1526] dark:via-[#101f38] dark:to-[#0b1526] p-4">
       <div className="max-w-md w-full space-y-6">
         {/* Brand header */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#1B365D] to-[#005A9C] flex items-center justify-center text-white shadow-md shadow-[#005A9C]/20 group-hover:scale-105 transition-transform">
+              <Sparkles className="w-5 h-5 text-[#A0E0EF]" />
             </div>
-            <span className="font-bold text-xl text-gray-900">CareerCraft</span>
+            <span className="font-bold text-xl text-slate-900 dark:text-white">CareerCraft</span>
           </Link>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Welcome Back</h2>
-          <p className="text-sm text-gray-500">Sign in to your account to manage your CVs &amp; portfolios</p>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Sign in to your account to manage your CVs &amp; portfolios</p>
         </div>
 
         {/* Demo Account Quick-Fill Card */}
-        <div className="p-3.5 rounded-xl border border-indigo-100 bg-indigo-50/60 flex items-center justify-between text-xs text-indigo-900">
+        <div className="p-3.5 rounded-xl border border-[#005A9C]/20 bg-[#A0E0EF]/20 dark:bg-[#005A9C]/20 dark:border-[#1B365D] flex items-center justify-between text-xs text-slate-900 dark:text-slate-100">
           <div>
-            <p className="font-semibold">Quick Test with Seeded Demo Account:</p>
-            <p className="text-indigo-600">demo@careercraft.com / Password123!</p>
+            <p className="font-semibold text-slate-900 dark:text-white">Quick Test with Seeded Demo Account:</p>
+            <p className="text-[#005A9C] dark:text-[#60C1E5]">demo@careercraft.com / Password123!</p>
           </div>
           <button
             type="button"
             onClick={fillDemo}
-            className="px-2.5 py-1 rounded bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors cursor-pointer"
+            className="px-2.5 py-1 rounded bg-[#005A9C] hover:bg-[#1B365D] text-white font-medium transition-colors cursor-pointer"
           >
             Auto-fill
           </button>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm space-y-5">
+        <div className="bg-white dark:bg-[#101f38] p-8 rounded-2xl border border-slate-200/80 dark:border-[#1B365D] shadow-sm space-y-5">
           {serverError && <Alert variant="error">{serverError}</Alert>}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -116,9 +116,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="text-center text-xs text-gray-500 pt-2 border-t border-gray-100">
+          <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-[#1B365D]">
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-semibold text-indigo-600 hover:underline">
+            <Link href="/register" className="font-semibold text-[#005A9C] dark:text-[#60C1E5] hover:underline">
               Create an account
             </Link>
           </div>

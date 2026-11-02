@@ -642,9 +642,9 @@ export default function CvsDashboardPage() {
       {/* Delete Confirmation Modal */}
       {cvToDelete && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
-            <h3 className="text-lg font-bold text-gray-900">Delete CV Document?</h3>
-            <p className="text-sm text-gray-500">
+          <div className="bg-white dark:bg-[#101f38] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-[#1B365D] space-y-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete CV Document?</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Are you sure you want to permanently delete &ldquo;{cvToDelete.title}&rdquo;? This
               action cannot be undone.
             </p>
