@@ -5,6 +5,13 @@
  * `@Param('id') id: string`: Extracts the :id from the URL path.
  * `@CurrentUser() user`: Extracts the authenticated user from the JWT.
  * Every method pairs these two parameters to enforce ownership.
+ *
+ * 🔑 NestJS Concept: File Upload with Multer
+ * `@UseInterceptors(FileInterceptor('file'))` tells NestJS to parse the
+ * incoming multipart/form-data request and place the file on `req.file`.
+ * `@UploadedFile()` then injects that file object into the handler.
+ * Multer stores the file in memory (MemoryStorage) so we get a Buffer we
+ * can pass directly to our parser service — no temp-file cleanup needed.
  */
 import {
   Controller,
@@ -15,11 +22,17 @@ import {
   Param,
   Body,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { CvsService } from './cvs.service';
+import { CvParserService } from './cv-parser.service';
 import { CreateCvDto } from './dto/create-cv.dto';
 import { UpdateCvDto } from './dto/update-cv.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -30,7 +43,10 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class CvsController {
-  constructor(private cvsService: CvsService) {}
+  constructor(
+    private cvsService: CvsService,
+    private cvParserService: CvParserService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: "List all current user's CV documents" })
@@ -38,6 +54,55 @@ export class CvsController {
   async findAll(@CurrentUser() user: any) {
     const cvs = await this.cvsService.findAll(user.id);
     return { cvs };
+  }
+
+  /**
+   * POST /api/v1/cvs/parse-document
+   *
+   * Accepts a PDF or DOCX file and returns structured CV data.
+   * The frontend uses this data to pre-populate the CV creation form.
+   *
+   * 🔑 NestJS Concept: FileInterceptor
+   * `FileInterceptor('file')` wraps this route handler so that multipart
+   * form-data is parsed before our method runs. The field name 'file'
+   * must match the FormData key the frontend sends.
+   * `memoryStorage()` tells Multer to keep the file in RAM (as a Buffer)
+   * instead of writing it to disk — perfect for small documents.
+   */
+  @Post('parse-document')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max
+      fileFilter: (_req, file, callback) => {
+        const allowed = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ];
+        if (allowed.includes(file.mimetype)) {
+          callback(null, true);
+        } else {
+          callback(new BadRequestException('Only PDF and DOCX files are allowed'), false);
+        }
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Parse a PDF or DOCX CV file and return extracted data' })
+  @ApiResponse({ status: 200, description: 'Document parsed successfully' })
+  async parseDocument(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded. Please attach a PDF or DOCX file.');
+    }
+    const extractedData = await this.cvParserService.parseDocument(file.buffer, file.mimetype);
+    return {
+      message: 'Document parsed successfully',
+      fileName: file.originalname,
+      fileSize: file.size,
+      extractedData,
+    };
   }
 
   @Post()

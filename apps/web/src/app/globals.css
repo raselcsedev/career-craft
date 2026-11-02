@@ -12,29 +12,52 @@ body {
 }
 
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  /* Hide EVERYTHING on the page first */
+  body * {
+    visibility: hidden !important;
   }
+
+  /* Then make only the CV printable area visible */
+  #cv-printable-area,
+  #cv-printable-area * {
+    visibility: visible !important;
+  }
+
+  /* Position it to fill the whole print page */
+  #cv-printable-area {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    z-index: 99999 !important;
+  }
+
+  /* Strip the decorative wrapper that adds grey bg + padding */
+  #cv-printable-area > .print-container {
+    background: white !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Utilities */
   .no-print {
     display: none !important;
+    visibility: hidden !important;
   }
+
   .print-only {
     display: block !important;
+    visibility: visible !important;
   }
-  .print-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-  }
+
   @page {
     size: A4 portrait;
-    margin: 12mm 10mm;
+    margin: 0;
   }
 }
 

@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CvsController } from './cvs.controller';
 import { CvsService } from './cvs.service';
+import { CvParserService } from './cv-parser.service';
 
 describe('CvsController', () => {
   let controller: CvsController;
   let service: any;
+  let parserService: any;
 
   const mockUser = { id: 'user-1', email: 'test@example.com' };
   const mockCv = {
@@ -25,10 +27,24 @@ describe('CvsController', () => {
       remove: jest.fn().mockResolvedValue({ message: 'CV document deleted successfully' }),
     };
 
+    parserService = {
+      parseDocument: jest.fn().mockResolvedValue({
+        personalInfo: { fullName: 'John Doe', email: 'john@example.com', phone: '', location: '', website: '', linkedin: '', github: '', jobTitle: '' },
+        summary: 'Experienced engineer',
+        experiences: [],
+        educations: [],
+        skills: [],
+        projects: [],
+        certifications: [],
+        languages: [],
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CvsController],
       providers: [
         { provide: CvsService, useValue: service },
+        { provide: CvParserService, useValue: parserService },
       ],
     }).compile();
 
@@ -76,5 +92,23 @@ describe('CvsController', () => {
     const result = await controller.remove(mockUser, 'cv-1');
     expect(result).toEqual({ message: 'CV document deleted successfully' });
     expect(service.remove).toHaveBeenCalledWith('user-1', 'cv-1');
+  });
+
+  it('should throw BadRequestException when no file is uploaded to parse-document', async () => {
+    await expect(controller.parseDocument(undefined as any)).rejects.toThrow('No file uploaded');
+  });
+
+  it('should parse a document and return extracted data', async () => {
+    const mockFile = {
+      buffer: Buffer.from('test'),
+      mimetype: 'application/pdf',
+      originalname: 'resume.pdf',
+      size: 4,
+    } as Express.Multer.File;
+
+    const result = await controller.parseDocument(mockFile);
+    expect(result.message).toBe('Document parsed successfully');
+    expect(result.extractedData.personalInfo.fullName).toBe('John Doe');
+    expect(parserService.parseDocument).toHaveBeenCalledWith(mockFile.buffer, mockFile.mimetype);
   });
 });

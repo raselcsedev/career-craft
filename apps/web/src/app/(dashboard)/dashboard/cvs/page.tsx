@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -14,16 +14,20 @@ import {
   FileText,
   Plus,
   Sparkles,
-  Layers,
   Copy,
   Trash2,
-  ExternalLink,
   Loader2,
   Edit3,
   Calendar,
   X,
   Check,
+  Upload,
+  FileUp,
+  AlertCircle,
 } from 'lucide-react';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+type CreateMode = 'blank' | 'import';
 
 export default function CvsDashboardPage() {
   const router = useRouter();
@@ -31,12 +35,23 @@ export default function CvsDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal State for creating a new CV
+  // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createMode, setCreateMode] = useState<CreateMode>('blank');
+
+  // Blank-create form state
   const [newTitle, setNewTitle] = useState('My Resume');
   const [selectedTemplateId, setSelectedTemplateId] = useState('classic-professional');
   const [templates, setTemplates] = useState<CvTemplate[]>([]);
   const [creating, setCreating] = useState(false);
+
+  // File-import state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [parsing, setParsing] = useState(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [parsedPreview, setParsedPreview] = useState<Record<string, any> | null>(null);
+  const [importTitle, setImportTitle] = useState('Imported Resume');
 
   // Delete confirmation modal state
   const [cvToDelete, setCvToDelete] = useState<CvDocument | null>(null);
@@ -45,7 +60,7 @@ export default function CvsDashboardPage() {
   // Duplicating state
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 
-  // Load CVs and templates
+  // ── Data loading ────────────────────────────────────────────────────────────
   const loadCvs = async () => {
     try {
       setLoading(true);
@@ -61,8 +76,6 @@ export default function CvsDashboardPage() {
 
   useEffect(() => {
     loadCvs();
-
-    // Fetch active templates
     api
       .get<{ templates: CvTemplate[] }>('/cv-templates')
       .then((res) => {
@@ -76,20 +89,39 @@ export default function CvsDashboardPage() {
       .catch((err) => console.warn('Could not fetch templates list:', err));
   }, []);
 
-  // Create CV
+  // ── Reset modal state ───────────────────────────────────────────────────────
+  const resetModal = () => {
+    setCreateMode('blank');
+    setNewTitle('My Resume');
+    setSelectedFile(null);
+    setParsedPreview(null);
+    setParseError(null);
+    setImportTitle('Imported Resume');
+    setParsing(false);
+    setCreating(false);
+  };
+
+  const openModal = () => {
+    resetModal();
+    setIsCreateModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  // ── Blank create ────────────────────────────────────────────────────────────
   const handleCreateCv = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
-
     try {
       setCreating(true);
       const res = await api.post<{ cv: CvDocument }>('/cvs', {
         title: newTitle.trim(),
         templateId: selectedTemplateId,
       });
-
       if (res?.cv?.id) {
-        setIsCreateModalOpen(false);
+        closeModal();
         router.push(`/dashboard/cvs/${res.cv.id}`);
       }
     } catch (err: any) {
@@ -99,7 +131,73 @@ export default function CvsDashboardPage() {
     }
   };
 
-  // Duplicate CV
+  // ── File selection & parse ──────────────────────────────────────────────────
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
+    setParsedPreview(null);
+    setParseError(null);
+    // Auto-suggest title from filename
+    const titleFromFile = file.name.replace(/\.(pdf|docx?|doc)$/i, '').replace(/[-_]/g, ' ');
+    setImportTitle(titleFromFile || 'Imported Resume');
+  };
+
+  const handleParseFile = async () => {
+    if (!selectedFile) return;
+    try {
+      setParsing(true);
+      setParseError(null);
+      setParsedPreview(null);
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      // We call the raw fetch here instead of api.post because we need
+      // multipart/form-data (not JSON) — api.post always sends JSON.
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${baseUrl}/api/v1/cvs/parse-document`, {
+        method: 'POST',
+        credentials: 'include', // send the JWT cookie
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || `Server error ${response.status}`);
+      }
+
+      const data = await response.json();
+      setParsedPreview(data.extractedData);
+    } catch (err: any) {
+      setParseError(err.message || 'Failed to parse file. Please check the file and try again.');
+    } finally {
+      setParsing(false);
+    }
+  };
+
+  // ── Create CV from parsed data ──────────────────────────────────────────────
+  const handleCreateFromFile = async () => {
+    if (!parsedPreview) return;
+    try {
+      setCreating(true);
+      const res = await api.post<{ cv: CvDocument }>('/cvs', {
+        title: importTitle.trim() || 'Imported Resume',
+        templateId: selectedTemplateId,
+        content: parsedPreview,
+      });
+      if (res?.cv?.id) {
+        closeModal();
+        router.push(`/dashboard/cvs/${res.cv.id}`);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to create CV from file');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // ── Duplicate ───────────────────────────────────────────────────────────────
   const handleDuplicate = async (cv: CvDocument) => {
     try {
       setDuplicatingId(cv.id);
@@ -112,7 +210,7 @@ export default function CvsDashboardPage() {
     }
   };
 
-  // Delete CV
+  // ── Delete ──────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (!cvToDelete) return;
     try {
@@ -139,6 +237,18 @@ export default function CvsDashboardPage() {
     }
   };
 
+  // ── Template list (fallback if API fails) ───────────────────────────────────
+  const defaultTemplates = [
+    { id: 'classic-professional', slug: 'classic-professional', name: 'Classic Professional', description: 'Traditional corporate layout', layout: 'single-column' },
+    { id: 'modern-corporate', slug: 'modern-corporate', name: 'Modern Corporate', description: 'Two-column layout with sidebar', layout: 'two-column-sidebar' },
+    { id: 'minimal', slug: 'minimal', name: 'Minimal', description: 'Clean airy minimalist typography', layout: 'minimal-clean' },
+    { id: 'creative', slug: 'creative', name: 'Creative', description: 'Vibrant accents and banners', layout: 'creative-accent' },
+    { id: 'developer', slug: 'developer', name: 'Developer', description: 'Monospace touches & tech badges', layout: 'developer-technical' },
+    { id: 'student-graduate', slug: 'student-graduate', name: 'Student / Graduate', description: 'Education and coursework first', layout: 'education-first' },
+  ];
+  const displayTemplates = templates.length > 0 ? templates : defaultTemplates;
+
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -149,28 +259,18 @@ export default function CvsDashboardPage() {
             Create, customize, and export ATS-friendly resumes for every application.
           </p>
         </div>
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
+        <Button onClick={openModal} leftIcon={<Plus className="w-4 h-4" />}>
           Create New CV
         </Button>
       </div>
 
-      {error && (
-        <Alert variant="error" title="Error">
-          {error}
-        </Alert>
-      )}
+      {error && <Alert variant="error" title="Error">{error}</Alert>}
 
       {/* Loading Skeleton */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((n) => (
-            <div
-              key={n}
-              className="h-64 rounded-xl border border-gray-200 bg-gray-50 animate-pulse p-5 space-y-4"
-            >
+            <div key={n} className="h-64 rounded-xl border border-gray-200 bg-gray-50 animate-pulse p-5 space-y-4">
               <div className="h-4 bg-gray-200 rounded w-1/3" />
               <div className="h-6 bg-gray-200 rounded w-3/4" />
               <div className="h-32 bg-gray-200 rounded" />
@@ -187,14 +287,10 @@ export default function CvsDashboardPage() {
             <div>
               <h3 className="text-lg font-bold text-gray-900">No resumes created yet</h3>
               <p className="text-sm text-gray-500 max-w-md mx-auto mt-1">
-                Start by creating your first CV document. We will automatically pre-populate it
-                with information from your profile so you can get going in seconds.
+                Start from scratch or import your existing CV from a PDF or Word document.
               </p>
             </div>
-            <Button
-              onClick={() => setIsCreateModalOpen(true)}
-              leftIcon={<Plus className="w-4 h-4" />}
-            >
+            <Button onClick={openModal} leftIcon={<Plus className="w-4 h-4" />}>
               Create Your First CV
             </Button>
           </CardContent>
@@ -235,7 +331,6 @@ export default function CvsDashboardPage() {
                         <div className="w-4/6 h-1 bg-gray-200 rounded-xs" />
                       </div>
                     </div>
-
                     <div className="flex items-center justify-between text-[11px] text-gray-400 font-medium pt-2 border-t border-gray-200/50">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
@@ -256,7 +351,6 @@ export default function CvsDashboardPage() {
                     Edit
                   </Button>
                 </Link>
-
                 <Button
                   size="sm"
                   variant="ghost"
@@ -270,7 +364,6 @@ export default function CvsDashboardPage() {
                     <Copy className="w-3.5 h-3.5" />
                   )}
                 </Button>
-
                 <Button
                   size="sm"
                   variant="ghost"
@@ -286,82 +379,262 @@ export default function CvsDashboardPage() {
         </div>
       )}
 
-      {/* Create New CV Modal */}
+      {/* ── Create New CV Modal ─────────────────────────────────────────────── */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+            {/* Modal Header */}
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/50">
               <h2 className="text-lg font-bold text-gray-900">Create New CV Document</h2>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg"
-              >
+              <button type="button" onClick={closeModal} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateCv} className="p-6 space-y-5">
-              <Input
-                label="Document Name / Title"
-                placeholder="e.g. Senior Frontend Engineer Resume"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                required
-              />
+            {/* Mode Tabs */}
+            <div className="flex border-b border-gray-200">
+              <button
+                type="button"
+                onClick={() => setCreateMode('blank')}
+                className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                  createMode === 'blank'
+                    ? 'text-indigo-700 border-b-2 border-indigo-600 bg-indigo-50/40'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                Start from Blank
+              </button>
+              <button
+                type="button"
+                onClick={() => setCreateMode('import')}
+                className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                  createMode === 'import'
+                    ? 'text-indigo-700 border-b-2 border-indigo-600 bg-indigo-50/40'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Upload className="w-4 h-4" />
+                Import from PDF / DOCX
+              </button>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Starting Template
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-1">
-                  {(templates.length > 0 ? templates : [
-                    { id: 'classic-professional', slug: 'classic-professional', name: 'Classic Professional', description: 'Traditional corporate layout', layout: 'single-column' },
-                    { id: 'modern-corporate', slug: 'modern-corporate', name: 'Modern Corporate', description: 'Two-column layout with sidebar', layout: 'two-column-sidebar' },
-                    { id: 'minimal', slug: 'minimal', name: 'Minimal', description: 'Clean airy minimalist typography', layout: 'minimal-clean' },
-                    { id: 'creative', slug: 'creative', name: 'Creative', description: 'Vibrant accents and banners', layout: 'creative-accent' },
-                    { id: 'developer', slug: 'developer', name: 'Developer', description: 'Monospace touches & tech badges', layout: 'developer-technical' },
-                    { id: 'student-graduate', slug: 'student-graduate', name: 'Student / Graduate', description: 'Education and coursework first', layout: 'education-first' },
-                  ]).map((t: any) => {
-                    const isSelected = selectedTemplateId === (t.slug || t.id);
-                    return (
-                      <div
-                        key={t.id || t.slug}
-                        onClick={() => setSelectedTemplateId(t.slug || t.id)}
-                        className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                          isSelected
-                            ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
-                            : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-sm text-gray-900">{t.name}</span>
-                          {isSelected && <Check className="w-4 h-4 text-indigo-600" />}
+            {/* ── BLANK TAB ───────────────────────────────────────────────── */}
+            {createMode === 'blank' && (
+              <form onSubmit={handleCreateCv} className="p-6 space-y-5">
+                <Input
+                  label="Document Name / Title"
+                  placeholder="e.g. Senior Frontend Engineer Resume"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  required
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Starting Template
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-1">
+                    {displayTemplates.map((t: any) => {
+                      const isSelected = selectedTemplateId === (t.slug || t.id);
+                      return (
+                        <div
+                          key={t.id || t.slug}
+                          onClick={() => setSelectedTemplateId(t.slug || t.id)}
+                          className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                            isSelected
+                              ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-bold text-sm text-gray-900">{t.name}</span>
+                            {isSelected && <Check className="w-4 h-4 text-indigo-600" />}
+                          </div>
+                          <p className="text-xs text-gray-500 line-clamp-1">{t.description}</p>
                         </div>
-                        <p className="text-xs text-gray-500 line-clamp-1">{t.description}</p>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-3">
+                  <Button type="button" variant="secondary" onClick={closeModal}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={creating || !newTitle.trim()}
+                    leftIcon={creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  >
+                    {creating ? 'Creating...' : 'Create & Open Editor'}
+                  </Button>
+                </div>
+              </form>
+            )}
+
+            {/* ── IMPORT TAB ──────────────────────────────────────────────── */}
+            {createMode === 'import' && (
+              <div className="p-6 space-y-5">
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Upload your existing CV as a <strong>PDF</strong> or <strong>DOCX</strong> file.
+                  We&apos;ll extract your name, contact info, experience, education, and skills and
+                  pre-fill the editor so you can fine-tune and download a polished new version.
+                </p>
+
+                {/* File Drop Zone */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+                    selectedFile
+                      ? 'border-indigo-400 bg-indigo-50/40'
+                      : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                  {selectedFile ? (
+                    <div className="space-y-2">
+                      <FileUp className="w-8 h-8 text-indigo-600 mx-auto" />
+                      <p className="font-semibold text-gray-900 text-sm">{selectedFile.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {(selectedFile.size / 1024).toFixed(1)} KB — Click to change file
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                      <p className="font-semibold text-gray-700 text-sm">
+                        Click to upload your CV
+                      </p>
+                      <p className="text-xs text-gray-400">PDF, DOC, or DOCX · Max 10 MB</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Parse button */}
+                {selectedFile && !parsedPreview && (
+                  <Button
+                    className="w-full"
+                    onClick={handleParseFile}
+                    disabled={parsing}
+                    leftIcon={
+                      parsing ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-4 h-4" />
+                      )
+                    }
+                  >
+                    {parsing ? 'Extracting data from file…' : 'Extract CV Data from File'}
+                  </Button>
+                )}
+
+                {/* Parse error */}
+                {parseError && (
+                  <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-xl p-3.5 text-sm text-red-700">
+                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                    <span>{parseError}</span>
+                  </div>
+                )}
+
+                {/* Parsed preview summary */}
+                {parsedPreview && (
+                  <div className="space-y-4">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-1">
+                      <p className="text-sm font-bold text-emerald-800 flex items-center gap-2">
+                        <Check className="w-4 h-4" /> Data extracted successfully!
+                      </p>
+                      <p className="text-xs text-emerald-700">
+                        Review the summary below, then click &ldquo;Create CV from File&rdquo; to open the editor with your data pre-filled.
+                      </p>
+                    </div>
+
+                    {/* Summary chips */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {[
+                        { label: 'Name', value: parsedPreview.personalInfo?.fullName || '—' },
+                        { label: 'Email', value: parsedPreview.personalInfo?.email || '—' },
+                        { label: 'Phone', value: parsedPreview.personalInfo?.phone || '—' },
+                        { label: 'Location', value: parsedPreview.personalInfo?.location || '—' },
+                        { label: 'Experiences', value: `${parsedPreview.experiences?.length || 0} found` },
+                        { label: 'Educations', value: `${parsedPreview.educations?.length || 0} found` },
+                        { label: 'Skills', value: `${parsedPreview.skills?.length || 0} found` },
+                        { label: 'Projects', value: `${parsedPreview.projects?.length || 0} found` },
+                      ].map(({ label, value }) => (
+                        <div key={label} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                          <p className="text-gray-400 font-medium">{label}</p>
+                          <p className="text-gray-900 font-semibold truncate">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CV title for import */}
+                    <Input
+                      label="CV Document Title"
+                      value={importTitle}
+                      onChange={(e) => setImportTitle(e.target.value)}
+                      placeholder="e.g. John Doe — Imported Resume"
+                    />
+
+                    {/* Template pick for import */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Choose a Template
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto p-1">
+                        {displayTemplates.map((t: any) => {
+                          const isSelected = selectedTemplateId === (t.slug || t.id);
+                          return (
+                            <div
+                              key={t.id || t.slug}
+                              onClick={() => setSelectedTemplateId(t.slug || t.id)}
+                              className={`p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
+                                isSelected
+                                  ? 'border-indigo-600 bg-indigo-50/40'
+                                  : 'border-gray-200 hover:border-gray-300 bg-white'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-0.5">
+                                <span className="font-bold text-xs text-gray-900 truncate">{t.name}</span>
+                                {isSelected && <Check className="w-3 h-3 text-indigo-600 shrink-0" />}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer actions */}
+                <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-3">
+                  <Button type="button" variant="secondary" onClick={closeModal}>
+                    Cancel
+                  </Button>
+                  {parsedPreview && (
+                    <Button
+                      onClick={handleCreateFromFile}
+                      disabled={creating}
+                      leftIcon={
+                        creating ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <FileText className="w-4 h-4" />
+                        )
+                      }
+                    >
+                      {creating ? 'Creating CV…' : 'Create CV from File'}
+                    </Button>
+                  )}
                 </div>
               </div>
-
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setIsCreateModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={creating || !newTitle.trim()}
-                  leftIcon={creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                >
-                  {creating ? 'Creating...' : 'Create & Open Editor'}
-                </Button>
-              </div>
-            </form>
+            )}
           </div>
         </div>
       )}
@@ -376,11 +649,7 @@ export default function CvsDashboardPage() {
               action cannot be undone.
             </p>
             <div className="flex items-center justify-end gap-3 pt-2">
-              <Button
-                variant="secondary"
-                onClick={() => setCvToDelete(null)}
-                disabled={deleting}
-              >
+              <Button variant="secondary" onClick={() => setCvToDelete(null)} disabled={deleting}>
                 Cancel
               </Button>
               <Button

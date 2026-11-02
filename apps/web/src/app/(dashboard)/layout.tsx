@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-40">
+      <div className="no-print md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-40">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
             <Sparkles className="w-4 h-4" />
@@ -85,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar Desktop */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform md:translate-x-0 md:static',
+          'no-print fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform md:translate-x-0 md:static',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
