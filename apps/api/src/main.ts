@@ -1,22 +1,19 @@
 /*
  * NestJS Entry Point
- * 
- * This file boots the NestJS application.
- * 
- * 🔑 NestJS Concept: main.ts
- * Think of this like your Next.js server startup, but for the backend.
- * It creates the app from AppModule (the root module), configures middleware
- * (like CORS, validation, Swagger docs), and starts listening on a port.
  */
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // Cookie parser for reading JWT auth cookie
+  app.use(cookieParser());
 
   // Global prefix: all routes start with /api/v1
   app.setGlobalPrefix('api/v1');
@@ -28,20 +25,20 @@ async function bootstrap() {
   });
 
   // Global validation pipe: automatically validates incoming DTOs
-  // This is like adding Zod validation to every API route automatically
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // strips properties not in the DTO
       forbidNonWhitelisted: true, // throws error if extra properties sent
-      transform: true, // auto-transforms types (e.g., string "1" → number 1)
+      transform: true, // auto-transforms types
     }),
   );
 
   // Swagger API documentation
   const swaggerConfig = new DocumentBuilder()
     .setTitle('CareerCraft API')
-    .setDescription('REST API for the CareerCraft CV Builder & Portfolio Platform')
+    .setDescription('REST API for CareerCraft CV Builder & Portfolio Platform')
     .setVersion('1.0')
+    .addBearerAuth()
     .addCookieAuth('access_token')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
