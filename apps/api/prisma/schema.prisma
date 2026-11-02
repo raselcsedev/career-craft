@@ -1,7 +1,3 @@
-// Prisma schema — Phase 1 (minimal, will grow in Phase 2)
-// This defines your database tables using Prisma's schema language.
-// Each `model` becomes a MySQL table.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,5 +7,153 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// We'll add User, Profile, Cv, Portfolio models in Phase 2.
-// For now, this validates the database connection.
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  role         Role        @default(USER)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  profile      Profile?
+  cvs          Cv[]
+  portfolios   Portfolio[]
+  media        Media[]
+
+  @@map("users")
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName   String?
+  lastName    String?
+  headline    String?
+  bio         String?  @db.Text
+  phone       String?
+  address     String?
+  city        String?
+  country     String?
+  postalCode  String?
+  website     String?
+  github      String?
+  linkedin    String?
+  twitter     String?
+  avatarUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model CvTemplate {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  description String   @db.Text
+  thumbnail   String?
+  layout      String   @default("single-column")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cvs         Cv[]
+
+  @@map("cv_templates")
+}
+
+model Cv {
+  id         String     @id @default(uuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId String
+  template   CvTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  title      String
+  slug       String?
+  content    Json
+  styling    Json?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([templateId])
+  @@map("cvs")
+}
+
+model PortfolioTemplate {
+  id          String      @id @default(uuid())
+  slug        String      @unique
+  name        String
+  description String      @db.Text
+  thumbnail   String?
+  layout      String      @default("standard")
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  portfolios  Portfolio[]
+
+  @@map("portfolio_templates")
+}
+
+model Portfolio {
+  id          String            @id @default(uuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId  String
+  template    PortfolioTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  title       String
+  slug        String            @unique
+  bio         String?           @db.Text
+  themeConfig Json?
+  isPublished Boolean           @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  projects    PortfolioProject[]
+
+  @@index([userId])
+  @@index([templateId])
+  @@map("portfolios")
+}
+
+model PortfolioProject {
+  id           String    @id @default(uuid())
+  portfolioId  String
+  portfolio    Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  title        String
+  description  String    @db.Text
+  technologies Json
+  projectUrl   String?
+  repoUrl      String?
+  imageUrl     String?
+  displayOrder Int       @default(0)
+  isFeatured   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([portfolioId])
+  @@map("portfolio_projects")
+}
+
+model Media {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  url          String
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("media")
+}

@@ -10,24 +10,26 @@
 - [x] Created implementation roadmap
 - [x] Created .gitignore and root package.json
 
-## Phase 1 — Project Setup & NestJS Fundamentals 🔄
-- [ ] Create Next.js app (apps/web)
-- [ ] Create NestJS API (apps/api)
-- [ ] Configure TypeScript
-- [ ] Configure MySQL + Prisma
-- [ ] Health endpoint (GET /api/v1/health)
-- [ ] Frontend fetches health endpoint
-- [ ] NestJS concepts explained: Module, Controller, Service, DI
-- [ ] Initial git commit
+## Phase 1 — Project Setup & NestJS Fundamentals ✅
+- [x] Create Next.js app (apps/web)
+- [x] Create NestJS API (apps/api)
+- [x] Configure TypeScript
+- [x] Configure MySQL + Prisma
+- [x] Health endpoint (GET /api/v1/health)
+- [x] Frontend fetches health endpoint
+- [x] NestJS concepts explained: Module, Controller, Service, DI
+- [x] Initial git commit
 
-## Phase 2 — Database & Authentication
+## Phase 2 — Database & Authentication 🔄
+- [ ] Install auth packages (bcryptjs, jwt, passport, cookie-parser)
 - [ ] Design Prisma schema (User, Profile, CvTemplate, Cv, PortfolioTemplate, Portfolio, PortfolioProject, Media)
-- [ ] First Prisma migration
-- [ ] Seed dev templates
-- [ ] Auth module: register, login, logout, me
-- [ ] JWT + HTTP-only cookies
-- [ ] Protected routes
-- [ ] Verify auth + persistence
+- [ ] Run Prisma migration
+- [ ] Seed dev templates (6 CV + 6 Portfolio templates + test user)
+- [ ] Implement PrismaService and UsersModule
+- [ ] Implement AuthModule (register, login, logout, me, JWT cookie strategy)
+- [ ] Add Auth Guard and CurrentUser decorator
+- [ ] Add Supertest E2E / Jest tests for Auth
+- [ ] Verify database persistence in MySQL
 
 ## Phase 3 — Application Shell & Dashboard
 - [ ] Design system (typography, colors, buttons, cards, inputs, toasts)
