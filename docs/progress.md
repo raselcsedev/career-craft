@@ -20,25 +20,27 @@
 - [x] NestJS concepts explained: Module, Controller, Service, DI
 - [x] Initial git commit
 
-## Phase 2 — Database & Authentication 🔄
-- [ ] Install auth packages (bcryptjs, jwt, passport, cookie-parser)
-- [ ] Design Prisma schema (User, Profile, CvTemplate, Cv, PortfolioTemplate, Portfolio, PortfolioProject, Media)
-- [ ] Run Prisma migration
-- [ ] Seed dev templates (6 CV + 6 Portfolio templates + test user)
-- [ ] Implement PrismaService and UsersModule
-- [ ] Implement AuthModule (register, login, logout, me, JWT cookie strategy)
-- [ ] Add Auth Guard and CurrentUser decorator
-- [ ] Add Supertest E2E / Jest tests for Auth
-- [ ] Verify database persistence in MySQL
+## Phase 2 — Database & Authentication ✅
+- [x] Install auth packages (bcryptjs, jwt, passport, cookie-parser)
+- [x] Design Prisma schema (User, Profile, CvTemplate, Cv, PortfolioTemplate, Portfolio, PortfolioProject, Media)
+- [x] Run Prisma migration
+- [x] Seed dev templates (6 CV + 6 Portfolio templates + test user)
+- [x] Implement PrismaService and UsersModule
+- [x] Implement AuthModule (register, login, logout, me, JWT cookie strategy)
+- [x] Add Auth Guard and CurrentUser decorator
+- [x] Add Supertest E2E / Jest tests for Auth
+- [x] Verify database persistence in MySQL
 
-## Phase 3 — Application Shell & Dashboard
-- [ ] Design system (typography, colors, buttons, cards, inputs, toasts)
-- [ ] Public landing page
-- [ ] Auth screens (register, login)
-- [ ] Protected dashboard layout
-- [ ] Profile management
-- [ ] Navigation + responsive layout
-- [ ] Connect to backend APIs
+## Phase 3 — Application Shell & Dashboard 🔄
+- [ ] Install TanStack Query, React Hook Form, Zod, and Lucide in frontend
+- [ ] Set up API client and Auth context / hook with real cookie/session management
+- [ ] Build Design System (Navbar, Footer, Button, Card, Input, Modal, Badge, Toast/Alert)
+- [ ] Public marketing landing page with feature highlights and template previews
+- [ ] Authentication screens: Register, Login, with form validation and server errors
+- [ ] Protected Dashboard layout (Sidebar, Header, User Menu)
+- [ ] User Profile Management page (edit personal info, headline, links, avatar)
+- [ ] User Profiles Backend API (`GET /api/v1/users/me/profile`, `PATCH /api/v1/users/me/profile`)
+- [ ] Test frontend authentication flows end-to-end
 
 ## Phase 4 — CV Builder
 - [ ] CV CRUD + duplication API
