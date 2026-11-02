@@ -454,8 +454,8 @@ export default function CvEditorPage() {
             mobileView === 'preview' ? 'hidden lg:block' : 'block'
           }`}
         >
-          {/* Horizontal Section Pills */}
-          <div className="bg-white border border-gray-200 rounded-xl p-1.5 shadow-xs flex overflow-x-auto gap-1 scrollbar-none">
+          {/* Section Navigation Tabs — 2x4 responsive grid so all 8 sections are always visible & clickable */}
+          <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-xs grid grid-cols-2 sm:grid-cols-4 gap-1.5">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
@@ -463,20 +463,22 @@ export default function CvEditorPage() {
                   key={item.id}
                   type="button"
                   onClick={() => setActiveSection(item.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-xs'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      : 'bg-gray-50/80 text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-100'
                   }`}
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
+                  <span className="flex items-center gap-1.5 min-w-0 truncate">
+                    {item.icon}
+                    <span className="truncate">{item.label}</span>
+                  </span>
                   {typeof item.count === 'number' && item.count > 0 && (
                     <span
-                      className={`ml-0.5 text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      className={`shrink-0 ml-1 text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                         isActive
                           ? 'bg-white/25 text-white'
-                          : 'bg-gray-200 text-gray-700'
+                          : 'bg-indigo-100 text-indigo-700'
                       }`}
                     >
                       {item.count}

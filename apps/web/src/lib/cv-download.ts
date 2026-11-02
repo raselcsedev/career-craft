@@ -1,39 +1,44 @@
 /**
  * cv-download.ts
  * ──────────────
- * Two helpers that let the user download a CV without a print dialog:
+ * Clean browser downloads for CV documents:
  *
  *  1. downloadCvAsPdf(elementId, filename)
- *     - Finds the rendered CV DOM element by ID
- *     - Captures it as a high-DPI canvas (html2canvas)
- *     - Creates an A4 PDF and embeds the canvas image (jsPDF)
- *     - Calculates the correct scale so the content fills A4 exactly,
- *       splitting across multiple pages if the CV is taller than one page
- *     - Triggers a browser download — no print dialog at all
+ *     - Uses html-to-image (SVG foreignObject) so it natively supports
+ *       Tailwind v4's oklab()/oklch() color functions without parser errors.
+ *     - Slices the captured canvas into exact A4 pages (210mm × 297mm).
+ *     - Ensures zero cut off on left, right, top, or bottom.
  *
  *  2. downloadCvAsDocx(content, title, filename)
- *     - Reads the structured CvContent object (same data the editor uses)
- *     - Builds a proper .docx file with headings, paragraphs, and tables
- *       using the `docx` library (runs 100 % in the browser)
- *     - Triggers a browser download
+ *     - Builds a structured Word .docx document using docx.
+ *     - Uses pure HTML5 anchor blob download (no file-saver ESM issues).
  */
 
 import type { CvContent } from '@/types/cv';
 
-// ── A4 constants ──────────────────────────────────────────────────────────────
+// ── Standard A4 dimensions ────────────────────────────────────────────────────
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
-// jsPDF uses 72 dpi by default; 1 mm = 2.8346 pt
-const MM_TO_PT = 2.8346;
 
-// ── PDF download ──────────────────────────────────────────────────────────────
+// ── Native Browser Blob Downloader (replaces fragile file-saver) ───────────────
+function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ── PDF Download (oklab-safe via html-to-image) ────────────────────────────────
 export async function downloadCvAsPdf(
   previewElementId: string,
   filename = 'resume.pdf',
 ): Promise<void> {
-  // Dynamic imports so these large libs are only loaded when needed
-  const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
-    import('html2canvas'),
+  const [{ toJpeg }, { default: jsPDF }] = await Promise.all([
+    import('html-to-image'),
     import('jspdf'),
   ]);
 
@@ -42,18 +47,24 @@ export async function downloadCvAsPdf(
     throw new Error(`Element #${previewElementId} not found in the DOM`);
   }
 
-  // Find the inner white CV page (strip the grey wrapper bg)
-  const cvPage = element.querySelector<HTMLElement>('.cv-printable-page') || element;
+  // Find the CV template element itself (inner clean white page)
+  const cvPage = (element.querySelector<HTMLElement>('.cv-printable-page') || element);
 
-  // Capture at 2× DPI for crisp text
-  const canvas = await html2canvas(cvPage, {
-    scale: 2,
-    useCORS: true,
-    logging: false,
+  // Capture using html-to-image which natively renders all modern CSS
+  // (oklab, oklch, modern fonts, flexbox/grid) through browser foreignObject
+  const dataUrl = await toJpeg(cvPage, {
+    quality: 0.98,
     backgroundColor: '#ffffff',
-    // Make sure we capture the full height even if the element scrolls
-    windowWidth: cvPage.scrollWidth,
-    windowHeight: cvPage.scrollHeight,
+    pixelRatio: 2, // 2x DPI for ultra-crisp text rendering
+    cacheBust: true,
+  });
+
+  // Load into Image to calculate exact dimensions
+  const img = new Image();
+  img.src = dataUrl;
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error('Failed to rasterize CV preview image'));
   });
 
   const pdf = new jsPDF({
@@ -63,66 +74,52 @@ export async function downloadCvAsPdf(
     compress: true,
   });
 
-  const pageWidthMm = A4_WIDTH_MM;
-  const pageHeightMm = A4_HEIGHT_MM;
+  const imgWidthPx = img.width;
+  const imgHeightPx = img.height;
 
-  // Scale canvas so it exactly fits the A4 width
-  const imgWidthMm = pageWidthMm;
-  const imgHeightMm = (canvas.height / canvas.width) * imgWidthMm;
-
-  const totalPages = Math.ceil(imgHeightMm / pageHeightMm);
+  // Exact pixel height that corresponds to 297mm on an A4 sheet at this width
+  const pageHeightPx = (A4_HEIGHT_MM / A4_WIDTH_MM) * imgWidthPx;
+  const totalPages = Math.max(1, Math.ceil(imgHeightPx / pageHeightPx));
 
   for (let page = 0; page < totalPages; page++) {
     if (page > 0) pdf.addPage();
 
-    // We slice the canvas vertically for each page
-    const sliceHeightPx = (pageHeightMm / imgWidthMm) * canvas.width;
-    const startY = page * sliceHeightPx;
-
     const sliceCanvas = document.createElement('canvas');
-    sliceCanvas.width = canvas.width;
-    sliceCanvas.height = Math.min(sliceHeightPx, canvas.height - startY);
+    sliceCanvas.width = imgWidthPx;
+    sliceCanvas.height = pageHeightPx;
 
     const ctx = sliceCanvas.getContext('2d');
     if (ctx) {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+
+      const sourceY = page * pageHeightPx;
+      const sourceHeight = Math.min(pageHeightPx, imgHeightPx - sourceY);
+
       ctx.drawImage(
-        canvas,
-        0, startY,                       // source x, y
-        canvas.width, sliceCanvas.height, // source width, height
-        0, 0,                             // dest x, y
-        canvas.width, sliceCanvas.height, // dest width, height
+        img,
+        0, sourceY, imgWidthPx, sourceHeight,
+        0, 0, imgWidthPx, sourceHeight,
       );
     }
 
-    const imgData = sliceCanvas.toDataURL('image/jpeg', 0.95);
-    const actualSliceHeightMm = (sliceCanvas.height / canvas.width) * imgWidthMm;
-
-    pdf.addImage(
-      imgData,
-      'JPEG',
-      0, 0,
-      imgWidthMm,
-      actualSliceHeightMm,
-    );
+    const pageDataUrl = sliceCanvas.toDataURL('image/jpeg', 0.95);
+    pdf.addImage(pageDataUrl, 'JPEG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM);
   }
 
   pdf.save(filename);
 }
 
-// ── DOCX download ─────────────────────────────────────────────────────────────
+// ── DOCX Download ─────────────────────────────────────────────────────────────
 export async function downloadCvAsDocx(
   content: CvContent,
   cvTitle = 'Resume',
   filename = 'resume.docx',
 ): Promise<void> {
-  const [{ Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, Table, TableRow, TableCell, WidthType, AlignmentType, UnderlineType }, { saveAs }] = await Promise.all([
-    import('docx'),
-    import('file-saver'),
-  ]);
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, AlignmentType } =
+    await import('docx');
 
-  const info = content.personalInfo || {};
+  const info = content.personalInfo || ({} as any);
 
   // ── Helper builders ───────────────────────────────────────────────────────
   const heading = (text: string) =>
@@ -151,7 +148,7 @@ export async function downloadCvAsDocx(
   // ── Document sections ─────────────────────────────────────────────────────
   const children: any[] = [];
 
-  // ── Header: Name + contact ────────────────────────────────────────────────
+  // Header: Name + Contact
   if (info.fullName) {
     children.push(
       new Paragraph({
@@ -178,10 +175,11 @@ export async function downloadCvAsDocx(
     );
   }
 
+  const locationStr = [info.city, info.country].filter(Boolean).join(', ');
   const contactParts = [
     info.email,
     info.phone,
-    [info.city, info.country].filter(Boolean).join(', '),
+    locationStr,
     info.linkedin,
     info.github,
     info.website,
@@ -197,13 +195,13 @@ export async function downloadCvAsDocx(
     );
   }
 
-  // ── Summary ────────────────────────────────────────────────────────────────
+  // Summary
   if (content.summary) {
     children.push(heading('Professional Summary'));
     children.push(body(content.summary));
   }
 
-  // ── Experience ─────────────────────────────────────────────────────────────
+  // Work Experience
   if (content.experiences?.length) {
     children.push(heading('Work Experience'));
     for (const exp of content.experiences) {
@@ -224,14 +222,17 @@ export async function downloadCvAsDocx(
 
       if (exp.location) children.push(body(`📍 ${exp.location}`));
       if (exp.description) {
-        exp.description.split(/\n|•/).filter(Boolean).forEach((line) => {
-          children.push(bulletPoint(line.trim()));
-        });
+        exp.description
+          .split(/\n|•/)
+          .filter(Boolean)
+          .forEach((line) => {
+            children.push(bulletPoint(line.trim()));
+          });
       }
     }
   }
 
-  // ── Education ──────────────────────────────────────────────────────────────
+  // Education
   if (content.educations?.length) {
     children.push(heading('Education'));
     for (const edu of content.educations) {
@@ -251,10 +252,9 @@ export async function downloadCvAsDocx(
     }
   }
 
-  // ── Skills ────────────────────────────────────────────────────────────────
+  // Skills
   if (content.skills?.length) {
     children.push(heading('Skills'));
-    // Group by category
     const byCategory: Record<string, string[]> = {};
     for (const s of content.skills) {
       const cat = s.category || 'General';
@@ -274,7 +274,7 @@ export async function downloadCvAsDocx(
     }
   }
 
-  // ── Projects ──────────────────────────────────────────────────────────────
+  // Key Projects
   if (content.projects?.length) {
     children.push(heading('Projects'));
     for (const proj of content.projects) {
@@ -288,15 +288,18 @@ export async function downloadCvAsDocx(
         children.push(body(`Tech: ${proj.technologies}`));
       }
       if (proj.description) {
-        proj.description.split(/\n|•/).filter(Boolean).forEach((line) => {
-          children.push(bulletPoint(line.trim()));
-        });
+        proj.description
+          .split(/\n|•/)
+          .filter(Boolean)
+          .forEach((line) => {
+            children.push(bulletPoint(line.trim()));
+          });
       }
       if (proj.url) children.push(body(`🔗 ${proj.url}`));
     }
   }
 
-  // ── Certifications ────────────────────────────────────────────────────────
+  // Certifications
   if (content.certifications?.length) {
     children.push(heading('Certifications'));
     for (const cert of content.certifications) {
@@ -313,14 +316,16 @@ export async function downloadCvAsDocx(
     }
   }
 
-  // ── Languages ─────────────────────────────────────────────────────────────
+  // Languages
   if (content.languages?.length) {
     children.push(heading('Languages'));
     children.push(
       new Paragraph({
         children: content.languages.map((l, i) =>
           new TextRun({
-            text: `${l.name}${l.proficiency ? ` (${l.proficiency})` : ''}${i < (content.languages?.length ?? 0) - 1 ? '   ·   ' : ''}`,
+            text: `${l.name}${l.proficiency ? ` (${l.proficiency})` : ''}${
+              i < (content.languages?.length ?? 0) - 1 ? '   ·   ' : ''
+            }`,
             size: 22,
           }),
         ),
@@ -329,7 +334,7 @@ export async function downloadCvAsDocx(
     );
   }
 
-  // ── Build & save ──────────────────────────────────────────────────────────
+  // Assemble document
   const doc = new Document({
     creator: 'CareerCraft',
     title: cvTitle,
@@ -338,8 +343,8 @@ export async function downloadCvAsDocx(
       {
         properties: {
           page: {
-            size: { width: 12240, height: 15840 }, // A4 in twips (1/1440 inch)
-            margin: { top: 720, right: 720, bottom: 720, left: 720 }, // 0.5 inch
+            size: { width: 12240, height: 15840 }, // A4 twips
+            margin: { top: 720, right: 720, bottom: 720, left: 720 }, // 0.5 in
           },
         },
         children,
@@ -348,5 +353,5 @@ export async function downloadCvAsDocx(
   });
 
   const blob = await Packer.toBlob(doc);
-  saveAs(blob, filename);
+  downloadBlob(blob, filename);
 }
