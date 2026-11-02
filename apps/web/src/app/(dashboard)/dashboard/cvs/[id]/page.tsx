@@ -18,6 +18,7 @@ import { TemplateSelectorModal } from '@/components/cv-editor/TemplateSelectorMo
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Alert } from '@/components/ui/Alert';
+import { downloadCvAsPdf, downloadCvAsDocx } from '@/lib/cv-download';
 import {
   ArrowLeft,
   Download,
@@ -36,6 +37,8 @@ import {
   Wrench,
   FolderGit2,
   Award,
+  ChevronDown,
+  FileDown,
 } from 'lucide-react';
 
 type TabSection =
@@ -67,6 +70,11 @@ export default function CvEditorPage() {
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+
+  // Download dropdown state
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+  const [downloading, setDownloading] = useState<'pdf' | 'docx' | null>(null);
+  const downloadRef = useRef<HTMLDivElement>(null);
 
   // Debounced Autosave ref
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -192,8 +200,43 @@ export default function CvEditorPage() {
     queueAutosave(title, content, styling, newTemplate.id);
   };
 
-  const handlePrint = () => {
-    window.print();
+  // ── Download handlers ──────────────────────────────────────────────────────
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (downloadRef.current && !downloadRef.current.contains(e.target as Node)) {
+        setIsDownloadOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const safeName = (title || 'resume').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+  const handleDownloadPdf = async () => {
+    setIsDownloadOpen(false);
+    setDownloading('pdf');
+    try {
+      await downloadCvAsPdf('cv-printable-area', `${safeName}.pdf`);
+    } catch (err: any) {
+      alert(`PDF export failed: ${err.message}`);
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const handleDownloadDocx = async () => {
+    setIsDownloadOpen(false);
+    setDownloading('docx');
+    try {
+      if (!content) throw new Error('No CV content to export');
+      await downloadCvAsDocx(content, title, `${safeName}.docx`);
+    } catch (err: any) {
+      alert(`Word export failed: ${err.message}`);
+    } finally {
+      setDownloading(null);
+    }
   };
 
   if (loading) {
@@ -317,15 +360,61 @@ export default function CvEditorPage() {
             <span className="font-semibold">{template?.name || 'Classic'}</span>
           </Button>
 
-          {/* Download / Print PDF */}
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={handlePrint}
-            leftIcon={<Download className="w-4 h-4" />}
-          >
-            Download PDF
-          </Button>
+          {/* Download Dropdown */}
+          <div className="relative" ref={downloadRef}>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setIsDownloadOpen((o) => !o)}
+              disabled={downloading !== null}
+              leftIcon={
+                downloading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4" />
+                )
+              }
+            >
+              {downloading === 'pdf'
+                ? 'Exporting PDF…'
+                : downloading === 'docx'
+                  ? 'Exporting Word…'
+                  : 'Download'}
+              <ChevronDown className="w-3.5 h-3.5 ml-1" />
+            </Button>
+
+            {isDownloadOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={handleDownloadPdf}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                >
+                  <span className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                    <FileText className="w-4 h-4" />
+                  </span>
+                  <div className="text-left">
+                    <p className="font-semibold">Download PDF</p>
+                    <p className="text-xs text-gray-400">A4 · Perfect for applying</p>
+                  </div>
+                </button>
+                <div className="border-t border-gray-100" />
+                <button
+                  type="button"
+                  onClick={handleDownloadDocx}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                >
+                  <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <FileDown className="w-4 h-4" />
+                  </span>
+                  <div className="text-left">
+                    <p className="font-semibold">Download Word</p>
+                    <p className="text-xs text-gray-400">.docx · Editable in MS Word</p>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
