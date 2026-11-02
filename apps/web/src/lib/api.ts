@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string, public data?: any) {
@@ -8,7 +8,9 @@ export class ApiError extends Error {
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const path = cleanEndpoint.startsWith('/api/v1') ? cleanEndpoint : `/api/v1${cleanEndpoint}`;
+  const url = `${API_HOST}${path}`;
 
   const headers = new Headers(options.headers || {});
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -28,7 +30,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   }
 
   if (!response.ok) {
-    const errorMessage = data?.message || (Array.isArray(data?.message) ? data.message.join(', ') : `Request failed with status ${response.status}`);
+    const errorMessage =
+      data?.message ||
+      (Array.isArray(data?.message) ? data.message.join(', ') : `Request failed with status ${response.status}`);
     throw new ApiError(response.status, errorMessage, data);
   }
 
