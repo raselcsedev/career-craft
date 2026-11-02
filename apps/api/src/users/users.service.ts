@@ -8,9 +8,9 @@
  * We don't do `new PrismaService()`. NestJS automatically injects the single
  * PrismaService instance when UsersService is initialized!
  */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, Prisma } from '@prisma/client';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -43,6 +43,30 @@ export class UsersService {
         },
       },
       include: { profile: true },
+    });
+  }
+
+  async getProfile(userId: string) {
+    const profile = await this.prisma.profile.findUnique({
+      where: { userId },
+    });
+    if (!profile) {
+      // Auto-create blank profile if not present
+      return this.prisma.profile.create({
+        data: { userId },
+      });
+    }
+    return profile;
+  }
+
+  async updateProfile(userId: string, data: UpdateProfileDto) {
+    return this.prisma.profile.upsert({
+      where: { userId },
+      update: data,
+      create: {
+        userId,
+        ...data,
+      },
     });
   }
 }

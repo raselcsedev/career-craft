@@ -31,16 +31,27 @@
 - [x] Add Supertest E2E / Jest tests for Auth
 - [x] Verify database persistence in MySQL
 
-## Phase 3 — Application Shell & Dashboard 🔄
-- [ ] Install TanStack Query, React Hook Form, Zod, and Lucide in frontend
-- [ ] Set up API client and Auth context / hook with real cookie/session management
-- [ ] Build Design System (Navbar, Footer, Button, Card, Input, Modal, Badge, Toast/Alert)
-- [ ] Public marketing landing page with feature highlights and template previews
-- [ ] Authentication screens: Register, Login, with form validation and server errors
-- [ ] Protected Dashboard layout (Sidebar, Header, User Menu)
-- [ ] User Profile Management page (edit personal info, headline, links, avatar)
-- [ ] User Profiles Backend API (`GET /api/v1/users/me/profile`, `PATCH /api/v1/users/me/profile`)
-- [ ] Test frontend authentication flows end-to-end
+## Phase 3 — Application Shell & Dashboard ✅
+- [x] Install TanStack Query, React Hook Form, Zod, and Lucide in frontend
+- [x] Set up API client and Auth context / hook with real cookie/session management
+- [x] Build Design System (Navbar, Footer, Button, Card, Input, Badge, Alert)
+- [x] Public marketing landing page with feature highlights and template previews
+- [x] Authentication screens: Register, Login, with form validation and demo auto-fill
+- [x] Protected Dashboard layout (Sidebar, Header, User Menu, auth redirect)
+- [x] User Profile Management page (edit personal info, headline, links, bio)
+- [x] User Profiles Backend API (`GET /api/v1/users/me/profile`, `PATCH /api/v1/users/me/profile`)
+- [x] Test frontend authentication and profile flows end-to-end
+
+## Phase 4 — CV Builder 🔄
+- [ ] CV CRUD + duplication backend API (`cvs.module.ts`, `cvs.controller.ts`, `cvs.service.ts`)
+- [ ] Ownership checks on every CV endpoint
+- [ ] CV templates API (`GET /api/v1/cv-templates`)
+- [ ] Build CV editor multi-step forms (Personal, Summary, Experience, Education, Skills, Projects, Certifications)
+- [ ] Implement 6 CV template renderers (Classic, Modern, Minimal, Creative, Developer, Student)
+- [ ] Shared CV rendering component (swapping templates preserves content)
+- [ ] Real-time side-by-side preview with debounced autosave
+- [ ] PDF export integration using reliable PDF generator
+- [ ] Unit & integration tests for CV module
 
 ## Phase 4 — CV Builder
 - [ ] CV CRUD + duplication API

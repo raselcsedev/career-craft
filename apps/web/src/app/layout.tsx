@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
+import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: "CareerCraft — Build Your Professional CV & Portfolio",
+  title: 'CareerCraft — Build Your Professional CV & Portfolio',
   description:
-    "Create professional CVs and portfolio websites with CareerCraft.",
+    'Create stunning ATS-friendly CVs and personal portfolio websites without writing code. Multiple templates, live preview, and one-click publishing.',
 };
 
 export default function RootLayout({
@@ -13,8 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" className="h-full">
+      <body className="min-h-full flex flex-col font-sans antialiased text-gray-900 bg-white">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
