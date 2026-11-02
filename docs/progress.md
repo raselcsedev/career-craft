@@ -42,35 +42,25 @@
 - [x] User Profiles Backend API (`GET /api/v1/users/me/profile`, `PATCH /api/v1/users/me/profile`)
 - [x] Test frontend authentication and profile flows end-to-end
 
-## Phase 4 — CV Builder 🔄
-- [ ] CV CRUD + duplication backend API (`cvs.module.ts`, `cvs.controller.ts`, `cvs.service.ts`)
-- [ ] Ownership checks on every CV endpoint
-- [ ] CV templates API (`GET /api/v1/cv-templates`)
-- [ ] Build CV editor multi-step forms (Personal, Summary, Experience, Education, Skills, Projects, Certifications)
-- [ ] Implement 6 CV template renderers (Classic, Modern, Minimal, Creative, Developer, Student)
-- [ ] Shared CV rendering component (swapping templates preserves content)
-- [ ] Real-time side-by-side preview with debounced autosave
-- [ ] PDF export integration using reliable PDF generator
-- [ ] Unit & integration tests for CV module
+## Phase 4 — CV Builder ✅
+- [x] CV CRUD + duplication backend API (`cvs.module.ts`, `cvs.controller.ts`, `cvs.service.ts`)
+- [x] Ownership checks on every CV endpoint
+- [x] CV templates API (`GET /api/v1/cv-templates`)
+- [x] Build CV editor multi-step forms (Personal, Summary, Experience, Education, Skills, Projects, Certifications, Languages, Design)
+- [x] Implement 6 CV template renderers (Classic, Modern, Minimal, Creative, Developer, Student)
+- [x] Shared CV rendering component (swapping templates preserves content)
+- [x] Real-time side-by-side preview with debounced autosave
+- [x] PDF export integration using reliable print styling
+- [x] Unit & integration tests for CV module
 
-## Phase 4 — CV Builder
-- [ ] CV CRUD + duplication API
-- [ ] CV editor forms (all sections)
-- [ ] Template gallery (6 templates)
-- [ ] Shared CV rendering system
-- [ ] Live preview
-- [ ] Autosave with debounce
-- [ ] PDF export
-- [ ] Tests
-
-## Phase 5 — Portfolio Builder
-- [ ] Portfolio CRUD API
-- [ ] Portfolio editor
-- [ ] Project management + image uploads
+## Phase 5 — Portfolio Builder 🔄
+- [ ] Portfolio CRUD API (`portfolios.module.ts`, `portfolios.controller.ts`, `portfolios.service.ts`)
+- [ ] Portfolio editor with customizable blocks
+- [ ] Project management + image uploads/media
 - [ ] 6 portfolio templates
 - [ ] Publish/unpublish with unique slugs
-- [ ] Public portfolio pages
-- [ ] Access control tests
+- [ ] Public portfolio pages (`/[slug]`)
+- [ ] Access control and tests
 
 ## Phase 6 — Admin & Polish
 - [ ] Admin area
