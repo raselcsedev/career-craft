@@ -1,14 +1,52 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-navy-950: #0b1526;
+  --color-navy-900: #101f38;
+  --color-navy-800: #162a4a;
+  --color-navy-700: #1B365D; /* #1B365D - Deep Navy */
+  --color-navy-600: #23477a;
+
+  --color-ocean-800: #003e6b;
+  --color-ocean-700: #004d85;
+  --color-ocean-600: #005A9C; /* #005A9C - Ocean Blue */
+  --color-ocean-500: #0e72bd;
+  --color-ocean-400: #2b8ede;
+
+  --color-sky-500: #42b3dc;
+  --color-sky-400: #60C1E5; /* #60C1E5 - Sky / Sea Blue */
+  --color-sky-300: #85d1ec;
+  --color-sky-200: #a9e0f3;
+
+  --color-ice-400: #82d4e7;
+  --color-ice-300: #A0E0EF; /* #A0E0EF - Soft Ice / Light Sea Blue */
+  --color-ice-200: #bdecf6;
+  --color-ice-100: #daf5fa;
+  --color-ice-50: #f0fafc;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary-navy: #1B365D;
+  --color-primary-ocean: #005A9C;
+  --color-primary-sky: #60C1E5;
+  --color-primary-ice: #A0E0EF;
+
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #0b1526;
+  --foreground: #f1f5f9;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 @media print {

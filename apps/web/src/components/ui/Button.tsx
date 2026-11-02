@@ -28,14 +28,19 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer rounded-lg';
+      'inline-flex items-center justify-center font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005A9C] dark:focus-visible:ring-[#60C1E5] disabled:pointer-events-none disabled:opacity-50 cursor-pointer rounded-lg';
 
     const variants = {
-      primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm',
-      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-      outline: 'border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700',
-      ghost: 'bg-transparent hover:bg-gray-100 text-gray-700',
-      danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm',
+      primary:
+        'bg-[#005A9C] text-white hover:bg-[#1B365D] shadow-xs active:scale-[0.99] border border-[#005A9C]/30 dark:bg-[#005A9C] dark:hover:bg-[#1B365D] dark:border-sky-400/20',
+      secondary:
+        'bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-navy-800/80 dark:text-slate-200 dark:hover:bg-navy-700/80 border border-slate-200/60 dark:border-navy-700/60',
+      outline:
+        'border border-slate-300 dark:border-navy-700 bg-transparent hover:bg-slate-50 dark:hover:bg-navy-800/50 text-slate-700 dark:text-slate-200',
+      ghost:
+        'bg-transparent hover:bg-slate-100 dark:hover:bg-navy-800/50 text-slate-700 dark:text-slate-200',
+      danger:
+        'bg-rose-600 text-white hover:bg-rose-700 shadow-xs border border-rose-700/30',
     };
 
     const sizes = {

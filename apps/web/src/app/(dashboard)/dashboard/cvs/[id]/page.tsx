@@ -302,13 +302,13 @@ export default function CvEditorPage() {
   return (
     <div className="space-y-4 -mt-2">
       {/* Top Action Bar (hidden in print) */}
-      <div className="no-print bg-white border border-gray-200 rounded-xl p-3 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="no-print bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-xl p-3 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
         {/* Left: Back & CV Title */}
         <div className="flex items-center gap-3">
           <Link href="/dashboard/cvs">
             <button
               type="button"
-              className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-navy-800 transition-colors"
               title="Back to all CVs"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -320,7 +320,7 @@ export default function CvEditorPage() {
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="CV Title (e.g. Full Stack Resume)"
-              className="font-bold text-gray-900 text-base sm:text-lg bg-transparent border-b border-transparent hover:border-gray-300 focus:border-indigo-600 focus:outline-none px-1 py-0.5 rounded transition-all"
+              className="font-bold text-slate-900 dark:text-white text-base sm:text-lg bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-navy-600 focus:border-[#005A9C] dark:focus:border-[#60C1E5] focus:outline-none px-1 py-0.5 rounded transition-all"
             />
           </div>
         </div>
@@ -328,19 +328,19 @@ export default function CvEditorPage() {
         {/* Center: Save status */}
         <div className="flex items-center gap-2 text-xs">
           {saveStatus === 'saving' && (
-            <span className="flex items-center gap-1.5 text-indigo-600 font-medium">
+            <span className="flex items-center gap-1.5 text-[#005A9C] dark:text-[#60C1E5] font-medium">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Saving changes...
             </span>
           )}
           {saveStatus === 'saved' && (
-            <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
+            <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
               <Check className="w-3.5 h-3.5" />
               All changes saved
             </span>
           )}
           {saveStatus === 'unsaved' && (
-            <span className="flex items-center gap-1.5 text-amber-600 font-medium">
+            <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-medium">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
               Unsaved changes
             </span>
@@ -354,7 +354,7 @@ export default function CvEditorPage() {
             size="sm"
             variant="outline"
             onClick={() => setIsTemplateModalOpen(true)}
-            leftIcon={<Layout className="w-4 h-4 text-indigo-600" />}
+            leftIcon={<Layout className="w-4 h-4 text-[#005A9C] dark:text-[#60C1E5]" />}
           >
             <span className="hidden sm:inline">Template:</span>{' '}
             <span className="font-semibold">{template?.name || 'Classic'}</span>
@@ -384,32 +384,32 @@ export default function CvEditorPage() {
             </Button>
 
             {isDownloadOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+              <div className="absolute right-0 top-full mt-1.5 w-52 bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-xl shadow-xl z-50 overflow-hidden">
                 <button
                   type="button"
                   onClick={handleDownloadPdf}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-[#A0E0EF]/15 dark:hover:bg-[#005A9C]/25 hover:text-[#005A9C] dark:hover:text-[#60C1E5] transition-colors"
                 >
                   <span className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0">
                     <FileText className="w-4 h-4" />
                   </span>
                   <div className="text-left">
                     <p className="font-semibold">Download PDF</p>
-                    <p className="text-xs text-gray-400">A4 · Perfect for applying</p>
+                    <p className="text-xs text-slate-400">A4 · Perfect for applying</p>
                   </div>
                 </button>
-                <div className="border-t border-gray-100" />
+                <div className="border-t border-slate-100 dark:border-[#1B365D]" />
                 <button
                   type="button"
                   onClick={handleDownloadDocx}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-[#A0E0EF]/15 dark:hover:bg-[#005A9C]/25 hover:text-[#005A9C] dark:hover:text-[#60C1E5] transition-colors"
                 >
                   <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                     <FileDown className="w-4 h-4" />
                   </span>
                   <div className="text-left">
                     <p className="font-semibold">Download Word</p>
-                    <p className="text-xs text-gray-400">.docx · Editable in MS Word</p>
+                    <p className="text-xs text-slate-400">.docx · Editable in MS Word</p>
                   </div>
                 </button>
               </div>
@@ -419,14 +419,14 @@ export default function CvEditorPage() {
       </div>
 
       {/* Mobile Tab Switcher: Editor vs Preview */}
-      <div className="no-print lg:hidden flex bg-gray-100 p-1 rounded-xl">
+      <div className="no-print lg:hidden flex bg-slate-100 dark:bg-navy-900 p-1 rounded-xl">
         <button
           type="button"
           onClick={() => setMobileView('editor')}
           className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
             mobileView === 'editor'
-              ? 'bg-white text-gray-900 shadow-xs'
-              : 'text-gray-500 hover:text-gray-900'
+              ? 'bg-white dark:bg-[#101f38] text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
           }`}
         >
           <FileEdit className="w-3.5 h-3.5" />
@@ -437,8 +437,8 @@ export default function CvEditorPage() {
           onClick={() => setMobileView('preview')}
           className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
             mobileView === 'preview'
-              ? 'bg-white text-gray-900 shadow-xs'
-              : 'text-gray-500 hover:text-gray-900'
+              ? 'bg-white dark:bg-[#101f38] text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
           }`}
         >
           <Eye className="w-3.5 h-3.5" />
@@ -455,7 +455,7 @@ export default function CvEditorPage() {
           }`}
         >
           {/* Section Navigation Tabs — 2x4 responsive grid so all 8 sections are always visible & clickable */}
-          <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-xs grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <div className="bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-xl p-2 shadow-xs grid grid-cols-2 sm:grid-cols-4 gap-1.5 transition-colors">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
               return (
@@ -465,8 +465,8 @@ export default function CvEditorPage() {
                   onClick={() => setActiveSection(item.id)}
                   className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-xs'
-                      : 'bg-gray-50/80 text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-100'
+                      ? 'bg-[#005A9C] text-white shadow-xs'
+                      : 'bg-slate-50/80 dark:bg-navy-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 hover:text-slate-900 dark:hover:text-white border border-slate-200/60 dark:border-navy-700/60'
                   }`}
                 >
                   <span className="flex items-center gap-1.5 min-w-0 truncate">
@@ -478,7 +478,7 @@ export default function CvEditorPage() {
                       className={`shrink-0 ml-1 text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                         isActive
                           ? 'bg-white/25 text-white'
-                          : 'bg-indigo-100 text-indigo-700'
+                          : 'bg-[#A0E0EF]/30 dark:bg-[#005A9C]/40 text-[#005A9C] dark:text-[#60C1E5]'
                       }`}
                     >
                       {item.count}
@@ -490,7 +490,7 @@ export default function CvEditorPage() {
           </div>
 
           {/* Section Form Content Card */}
-          <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-xs min-h-[500px]">
+          <div className="bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-xl p-5 sm:p-6 shadow-xs min-h-[500px] transition-colors">
             {activeSection === 'personal' && (
               <div>
                 <h3 className="text-base font-bold text-gray-900 mb-1">Personal Details</h3>
@@ -617,16 +617,16 @@ export default function CvEditorPage() {
           } print:block print:w-full print:m-0 print:p-0`}
         >
           {/* Preview Container Bar (hidden in print) */}
-          <div className="no-print flex items-center justify-between mb-2 px-1 text-xs text-gray-500">
+          <div className="no-print flex items-center justify-between mb-2 px-1 text-xs text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5 font-medium">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              <Sparkles className="w-3.5 h-3.5 text-[#005A9C] dark:text-[#60C1E5]" />
               Live Preview ({template?.name || 'Classic Professional'})
             </span>
-            <span className="text-gray-400">Updates live as you type</span>
+            <span className="text-slate-400 dark:text-slate-500">Updates live as you type</span>
           </div>
 
           {/* Rendered CV Document */}
-          <div className="print-container overflow-hidden rounded-xl bg-gray-100 p-2 sm:p-4 border border-gray-200/80 shadow-inner">
+          <div className="print-container overflow-hidden rounded-xl bg-slate-100 dark:bg-[#0b1526] p-2 sm:p-4 border border-slate-200/80 dark:border-[#1B365D]/80 shadow-inner transition-colors">
             <CvRenderer
               content={content}
               styling={styling || undefined}

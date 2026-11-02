@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -65,41 +66,44 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b1526] text-slate-900 dark:text-slate-100 flex flex-col md:flex-row transition-colors duration-200">
       {/* Mobile Top Bar */}
-      <div className="no-print md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-40">
+      <div className="no-print md:hidden flex items-center justify-between bg-white dark:bg-[#101f38] border-b border-slate-200 dark:border-[#1B365D] px-4 py-3 sticky top-0 z-40 transition-colors">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#1B365D] via-[#005A9C] to-[#60C1E5] flex items-center justify-center text-white shadow-2xs">
             <Sparkles className="w-4 h-4" />
           </div>
-          <span className="font-bold text-gray-900">CareerCraft</span>
+          <span className="font-bold text-slate-900 dark:text-white">CareerCraft</span>
         </Link>
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-gray-600 rounded-lg hover:bg-gray-100"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle size="sm" />
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-navy-800"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Sidebar Desktop */}
       <aside
         className={cn(
-          'no-print fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform md:translate-x-0 md:static',
+          'no-print fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#101f38] border-r border-slate-200 dark:border-[#1B365D] flex flex-col transition-transform md:translate-x-0 md:static transition-colors duration-200',
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
         {/* Brand */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-100 dark:border-[#1B365D]/60 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-xs shadow-indigo-100">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#1B365D] via-[#005A9C] to-[#60C1E5] flex items-center justify-center text-white shadow-sm shadow-[#005A9C]/20">
               <Sparkles className="w-4 h-4" />
             </div>
-            <span className="font-bold text-lg text-gray-900">CareerCraft</span>
+            <span className="font-bold text-lg text-slate-900 dark:text-white">CareerCraft</span>
           </Link>
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="md:hidden p-1.5 text-gray-400 hover:text-gray-600 rounded-lg"
+            className="md:hidden p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
           >
             <X className="w-5 h-5" />
           </button>
@@ -118,32 +122,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={cn(
                   'flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900',
+                    ? 'bg-[#005A9C]/10 dark:bg-[#005A9C]/25 text-[#005A9C] dark:text-[#60C1E5]'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-navy-800/60 hover:text-slate-900 dark:hover:text-slate-100',
                 )}
               >
-                <Icon className={cn('w-4 h-4', isActive ? 'text-indigo-600' : 'text-gray-400')} />
+                <Icon className={cn('w-4 h-4', isActive ? 'text-[#005A9C] dark:text-[#60C1E5]' : 'text-slate-400 dark:text-slate-500')} />
                 <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* User Card & Logout */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-indigo-600 text-white font-semibold text-xs flex items-center justify-center shrink-0">
-              {userInitials}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
-              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+        {/* User Card, Theme Toggle & Logout */}
+        <div className="p-4 border-t border-slate-100 dark:border-[#1B365D]/60 bg-slate-50/50 dark:bg-[#0b1526]/50 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#1B365D] to-[#005A9C] text-white font-semibold text-xs flex items-center justify-center shrink-0">
+                {userInitials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">{displayName}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+              </div>
             </div>
           </div>
+
+          {/* Theme Toggle Pill in Sidebar */}
+          <ThemeToggle className="w-full justify-center" showLabel={true} size="sm" />
+
           <Button
             variant="outline"
             size="sm"
-            className="w-full text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
+            className="w-full text-xs text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:border-rose-200"
             onClick={() => logout()}
             leftIcon={<LogOut className="w-3.5 h-3.5" />}
           >

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
+import { useTheme } from '@/lib/theme-context';
 import {
   Lock,
   Shield,
@@ -21,6 +22,10 @@ import {
   User,
   KeyRound,
   X,
+  Palette,
+  Sun,
+  Moon,
+  Monitor,
 } from 'lucide-react';
 
 const passwordSchema = z
@@ -38,6 +43,7 @@ type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
 
   const [passwordSuccess, setPasswordSuccess] = useState(false);
@@ -105,24 +111,65 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="p-3.5 rounded-xl bg-gray-50 space-y-1">
-              <p className="text-xs text-gray-400 font-medium">Registered Email</p>
-              <p className="font-semibold text-gray-900">{user?.email}</p>
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b1526]/60 border border-slate-100 dark:border-navy-700/60 space-y-1">
+              <p className="text-xs text-slate-400 font-medium">Registered Email</p>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">{user?.email}</p>
             </div>
-            <div className="p-3.5 rounded-xl bg-gray-50 space-y-1">
-              <p className="text-xs text-gray-400 font-medium">Account Role</p>
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b1526]/60 border border-slate-100 dark:border-navy-700/60 space-y-1">
+              <p className="text-xs text-slate-400 font-medium">Account Role</p>
               <div className="pt-0.5">
                 <Badge variant={user?.role === 'ADMIN' ? 'default' : 'neutral'}>
                   {user?.role}
                 </Badge>
               </div>
             </div>
-            <div className="p-3.5 rounded-xl bg-gray-50 space-y-1">
-              <p className="text-xs text-gray-400 font-medium">Member Since</p>
-              <p className="font-semibold text-gray-900">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b1526]/60 border border-slate-100 dark:border-navy-700/60 space-y-1">
+              <p className="text-xs text-slate-400 font-medium">Member Since</p>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Active'}
               </p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Appearance & Theme Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Palette className="w-5 h-5 text-[#005A9C] dark:text-[#60C1E5]" />
+            <CardTitle>Appearance &amp; Theme</CardTitle>
+          </div>
+          <CardDescription>Select your preferred color theme for the CareerCraft interface.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { id: 'light', label: 'Light Mode', icon: Sun, desc: 'Crisp ocean & sea white interface' },
+              { id: 'dark', label: 'Dark Mode', icon: Moon, desc: 'Deep navy midnight sea theme' },
+              { id: 'system', label: 'System Sync', icon: Monitor, desc: 'Matches your OS appearance' },
+            ].map(({ id, label, icon: Icon, desc }) => {
+              const isSelected = theme === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setTheme(id as any)}
+                  className={`p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                    isSelected
+                      ? 'border-[#005A9C] bg-[#A0E0EF]/15 dark:border-[#60C1E5] dark:bg-[#005A9C]/25 shadow-xs'
+                      : 'border-slate-200 dark:border-navy-700/80 hover:border-slate-300 dark:hover:border-navy-600 bg-white dark:bg-[#0b1526]/40'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <Icon className={`w-5 h-5 ${isSelected ? 'text-[#005A9C] dark:text-[#60C1E5]' : 'text-slate-400'}`} />
+                    {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-[#005A9C] dark:bg-[#60C1E5]" />}
+                  </div>
+                  <p className="font-semibold text-sm text-slate-900 dark:text-slate-100">{label}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{desc}</p>
+                </button>
+              );
+            })}
           </div>
         </CardContent>
       </Card>

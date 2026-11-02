@@ -254,8 +254,8 @@ export default function CvsDashboardPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">My CV Documents</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">My CV Documents</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Create, customize, and export ATS-friendly resumes for every application.
           </p>
         </div>
@@ -270,23 +270,23 @@ export default function CvsDashboardPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="h-64 rounded-xl border border-gray-200 bg-gray-50 animate-pulse p-5 space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-1/3" />
-              <div className="h-6 bg-gray-200 rounded w-3/4" />
-              <div className="h-32 bg-gray-200 rounded" />
+            <div key={n} className="h-64 rounded-xl border border-slate-200 dark:border-[#1B365D] bg-slate-50 dark:bg-[#101f38] animate-pulse p-5 space-y-4">
+              <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded w-1/3" />
+              <div className="h-6 bg-slate-200 dark:bg-navy-700 rounded w-3/4" />
+              <div className="h-32 bg-slate-200 dark:bg-navy-700 rounded" />
             </div>
           ))}
         </div>
       ) : cvs.length === 0 ? (
         /* Empty State */
-        <Card className="border-dashed border-2 bg-gray-50/50 text-center py-16">
+        <Card className="border-dashed border-2 bg-slate-50/50 dark:bg-[#101f38]/40 text-center py-16">
           <CardContent className="space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-[#A0E0EF]/25 text-[#005A9C] dark:text-[#60C1E5] flex items-center justify-center mx-auto shadow-2xs">
               <FileText className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">No resumes created yet</h3>
-              <p className="text-sm text-gray-500 max-w-md mx-auto mt-1">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">No resumes created yet</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
                 Start from scratch or import your existing CV from a PDF or Word document.
               </p>
             </div>
@@ -301,16 +301,16 @@ export default function CvsDashboardPage() {
           {cvs.map((doc) => (
             <div
               key={doc.id}
-              className="group relative bg-white border border-gray-200 rounded-2xl p-5 shadow-xs hover:shadow-md hover:border-indigo-200 transition-all flex flex-col justify-between"
+              className="group relative bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-2xl p-5 shadow-xs hover:shadow-md hover:border-[#005A9C] dark:hover:border-[#60C1E5] transition-all flex flex-col justify-between"
             >
               <div>
                 {/* Header of card */}
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex-1">
-                    <span className="text-[11px] font-semibold tracking-wider text-indigo-600 uppercase">
+                    <span className="text-[11px] font-semibold tracking-wider text-[#005A9C] dark:text-[#60C1E5] uppercase">
                       {doc.template?.name || 'Classic'}
                     </span>
-                    <h2 className="text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#005A9C] dark:group-hover:text-[#60C1E5] transition-colors">
                       {doc.title || 'Untitled CV'}
                     </h2>
                   </div>
@@ -321,22 +321,22 @@ export default function CvsDashboardPage() {
 
                 {/* Visual Document Mockup Preview Box */}
                 <Link href={`/dashboard/cvs/${doc.id}`}>
-                  <div className="w-full aspect-[16/10] bg-gray-50 border border-gray-100 rounded-xl p-3.5 flex flex-col justify-between group-hover:bg-indigo-50/30 transition-colors cursor-pointer mb-4 overflow-hidden relative">
+                  <div className="w-full aspect-[16/10] bg-slate-50 dark:bg-[#0b1526] border border-slate-100 dark:border-navy-700/60 rounded-xl p-3.5 flex flex-col justify-between group-hover:bg-[#A0E0EF]/10 dark:group-hover:bg-[#005A9C]/15 transition-colors cursor-pointer mb-4 overflow-hidden relative">
                     <div className="space-y-2">
-                      <div className="w-2/5 h-2 bg-gray-300 rounded-xs" />
-                      <div className="w-1/3 h-1.5 bg-gray-200 rounded-xs" />
+                      <div className="w-2/5 h-2 bg-slate-300 dark:bg-navy-600 rounded-xs" />
+                      <div className="w-1/3 h-1.5 bg-slate-200 dark:bg-navy-700 rounded-xs" />
                       <div className="pt-2 space-y-1">
-                        <div className="w-full h-1 bg-gray-200 rounded-xs" />
-                        <div className="w-5/6 h-1 bg-gray-200 rounded-xs" />
-                        <div className="w-4/6 h-1 bg-gray-200 rounded-xs" />
+                        <div className="w-full h-1 bg-slate-200 dark:bg-navy-700 rounded-xs" />
+                        <div className="w-5/6 h-1 bg-slate-200 dark:bg-navy-700 rounded-xs" />
+                        <div className="w-4/6 h-1 bg-slate-200 dark:bg-navy-700 rounded-xs" />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-gray-400 font-medium pt-2 border-t border-gray-200/50">
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium pt-2 border-t border-slate-200/50 dark:border-navy-700/50">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         Updated {formatDate(doc.updatedAt)}
                       </span>
-                      <span className="text-indigo-600 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      <span className="text-[#005A9C] dark:text-[#60C1E5] font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                         Open Editor →
                       </span>
                     </div>
@@ -345,7 +345,7 @@ export default function CvsDashboardPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+              <div className="pt-3 border-t border-slate-100 dark:border-[#1B365D]/60 flex items-center justify-between gap-2">
                 <Link href={`/dashboard/cvs/${doc.id}`} className="flex-1">
                   <Button size="sm" variant="outline" className="w-full" leftIcon={<Edit3 className="w-3.5 h-3.5" />}>
                     Edit
@@ -368,7 +368,7 @@ export default function CvsDashboardPage() {
                   size="sm"
                   variant="ghost"
                   onClick={() => setCvToDelete(doc)}
-                  className="text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                   title="Delete CV"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -382,24 +382,24 @@ export default function CvsDashboardPage() {
       {/* ── Create New CV Modal ─────────────────────────────────────────────── */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-[#101f38] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#1B365D] overflow-hidden transition-colors">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/50">
-              <h2 className="text-lg font-bold text-gray-900">Create New CV Document</h2>
-              <button type="button" onClick={closeModal} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-[#1B365D] flex items-center justify-between bg-slate-50/50 dark:bg-[#0b1526]/50">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Create New CV Document</h2>
+              <button type="button" onClick={closeModal} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Mode Tabs */}
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b border-slate-200 dark:border-[#1B365D]">
               <button
                 type="button"
                 onClick={() => setCreateMode('blank')}
                 className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                   createMode === 'blank'
-                    ? 'text-indigo-700 border-b-2 border-indigo-600 bg-indigo-50/40'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'text-[#005A9C] dark:text-[#60C1E5] border-b-2 border-[#005A9C] dark:border-[#60C1E5] bg-[#A0E0EF]/15 dark:bg-[#005A9C]/20 font-semibold'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-navy-800'
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
@@ -410,8 +410,8 @@ export default function CvsDashboardPage() {
                 onClick={() => setCreateMode('import')}
                 className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                   createMode === 'import'
-                    ? 'text-indigo-700 border-b-2 border-indigo-600 bg-indigo-50/40'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'text-[#005A9C] dark:text-[#60C1E5] border-b-2 border-[#005A9C] dark:border-[#60C1E5] bg-[#A0E0EF]/15 dark:bg-[#005A9C]/20 font-semibold'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-navy-800'
                 }`}
               >
                 <Upload className="w-4 h-4" />
@@ -431,7 +431,7 @@ export default function CvsDashboardPage() {
                 />
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Select Starting Template
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-1">
@@ -443,22 +443,22 @@ export default function CvsDashboardPage() {
                           onClick={() => setSelectedTemplateId(t.slug || t.id)}
                           className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
                             isSelected
-                              ? 'border-indigo-600 bg-indigo-50/40 shadow-xs'
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                              ? 'border-[#005A9C] dark:border-[#60C1E5] bg-[#A0E0EF]/15 dark:bg-[#005A9C]/25 shadow-xs'
+                              : 'border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-navy-600 bg-white dark:bg-navy-900/40'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-sm text-gray-900">{t.name}</span>
-                            {isSelected && <Check className="w-4 h-4 text-indigo-600" />}
+                            <span className="font-bold text-sm text-slate-900 dark:text-slate-100">{t.name}</span>
+                            {isSelected && <Check className="w-4 h-4 text-[#005A9C] dark:text-[#60C1E5]" />}
                           </div>
-                          <p className="text-xs text-gray-500 line-clamp-1">{t.description}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{t.description}</p>
                         </div>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-3">
+                <div className="pt-3 border-t border-slate-100 dark:border-[#1B365D] flex items-center justify-end gap-3">
                   <Button type="button" variant="secondary" onClick={closeModal}>
                     Cancel
                   </Button>
@@ -476,7 +476,7 @@ export default function CvsDashboardPage() {
             {/* ── IMPORT TAB ──────────────────────────────────────────────── */}
             {createMode === 'import' && (
               <div className="p-6 space-y-5">
-                <p className="text-sm text-gray-500 leading-relaxed">
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                   Upload your existing CV as a <strong>PDF</strong> or <strong>DOCX</strong> file.
                   We&apos;ll extract your name, contact info, experience, education, and skills and
                   pre-fill the editor so you can fine-tune and download a polished new version.
@@ -487,8 +487,8 @@ export default function CvsDashboardPage() {
                   onClick={() => fileInputRef.current?.click()}
                   className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
                     selectedFile
-                      ? 'border-indigo-400 bg-indigo-50/40'
-                      : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                      ? 'border-[#005A9C] dark:border-[#60C1E5] bg-[#A0E0EF]/15 dark:bg-[#005A9C]/20'
+                      : 'border-slate-300 dark:border-navy-700 hover:border-[#005A9C] dark:hover:border-[#60C1E5] hover:bg-slate-50 dark:hover:bg-navy-900/40'
                   }`}
                 >
                   <input
@@ -500,19 +500,19 @@ export default function CvsDashboardPage() {
                   />
                   {selectedFile ? (
                     <div className="space-y-2">
-                      <FileUp className="w-8 h-8 text-indigo-600 mx-auto" />
-                      <p className="font-semibold text-gray-900 text-sm">{selectedFile.name}</p>
-                      <p className="text-xs text-gray-500">
+                      <FileUp className="w-8 h-8 text-[#005A9C] dark:text-[#60C1E5] mx-auto" />
+                      <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">{selectedFile.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         {(selectedFile.size / 1024).toFixed(1)} KB — Click to change file
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto" />
-                      <p className="font-semibold text-gray-700 text-sm">
+                      <Upload className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto" />
+                      <p className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
                         Click to upload your CV
                       </p>
-                      <p className="text-xs text-gray-400">PDF, DOC, or DOCX · Max 10 MB</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">PDF, DOC, or DOCX · Max 10 MB</p>
                     </div>
                   )}
                 </div>
