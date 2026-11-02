@@ -8,6 +8,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CvTemplatesModule } from './cv-templates/cv-templates.module';
 import { CvsModule } from './cvs/cvs.module';
+import { PortfolioTemplatesModule } from './portfolio-templates/portfolio-templates.module';
+import { PortfoliosModule } from './portfolios/portfolios.module';
 import { HealthController } from './health/health.controller';
 
 @Module({
@@ -20,6 +22,8 @@ import { HealthController } from './health/health.controller';
     AuthModule,
     CvTemplatesModule,
     CvsModule,
+    PortfolioTemplatesModule,
+    PortfoliosModule,
   ],
   controllers: [HealthController],
   providers: [],

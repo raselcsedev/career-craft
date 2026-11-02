@@ -53,20 +53,23 @@
 - [x] PDF export integration using reliable print styling
 - [x] Unit & integration tests for CV module
 
-## Phase 5 — Portfolio Builder 🔄
-- [ ] Portfolio CRUD API (`portfolios.module.ts`, `portfolios.controller.ts`, `portfolios.service.ts`)
-- [ ] Portfolio editor with customizable blocks
-- [ ] Project management + image uploads/media
-- [ ] 6 portfolio templates
-- [ ] Publish/unpublish with unique slugs
-- [ ] Public portfolio pages (`/[slug]`)
-- [ ] Access control and tests
+## Phase 5 — Portfolio Builder ✅
+- [x] Portfolio CRUD API (`portfolios.module.ts`, `portfolios.controller.ts`, `portfolios.service.ts`)
+- [x] Portfolio templates catalog API (`GET /api/v1/portfolio-templates`)
+- [x] Public portfolio endpoint (`GET /api/v1/public/portfolios/:slug`) with strict unpublishing restrictions and data minimization
+- [x] Reserved slug protection & regex slug validation
+- [x] Project management sub-resources (create, update, delete, reorder)
+- [x] 6 Portfolio template renderers (Minimal Developer, Dark Creative, Professional Corporate, Designer Visual, Student, Modern Personal Brand)
+- [x] Portfolio dashboard (`/dashboard/portfolios`) with live toggle, copy link, and deletion
+- [x] Portfolio editor (`/dashboard/portfolios/[id]`) with live preview, device switcher, project manager, theme customizer
+- [x] Public portfolio routes (`/p/[slug]`) for visitors without authentication
+- [x] Unit tests for Portfolios module (36/36 tests passing)
 
-## Phase 6 — Admin & Polish
-- [ ] Admin area
-- [ ] Responsive refinement
-- [ ] Account settings + deletion
-- [ ] Error/loading/empty states polish
+## Phase 6 — Administration and Product Polish 🔄
+- [ ] Admin guard & authorization check (`Role.ADMIN`)
+- [ ] Admin endpoints for managing template metadata and active/inactive status
+- [ ] Account settings: change password, account summary, and account deletion workflow
+- [ ] Responsive UI refinements and polished empty/loading/error states
 
 ## Phase 7 — Testing & Security
 - [ ] Backend tests
