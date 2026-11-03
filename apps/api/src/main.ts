@@ -18,10 +18,52 @@ async function bootstrap() {
   // Global prefix: all routes start with /api/v1
   app.setGlobalPrefix('api/v1');
 
-  // Enable CORS so the Next.js frontend (port 3000) can call this API (port 3001)
+  // Enable CORS with support for Vercel subdomains, custom domains, and credentials
+  const corsOriginEnv = configService.get<string>('CORS_ORIGIN', 'http://localhost:3000');
+  const allowedOrigins = corsOriginEnv
+    .split(',')
+    .map((o) => o.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
   app.enableCors({
-    origin: configService.get<string>('CORS_ORIGIN', 'http://localhost:3000'),
-    credentials: true, // needed for cookies
+    origin: (requestOrigin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (mobile apps, server-to-server, curl)
+      if (!requestOrigin) {
+        return callback(null, true);
+      }
+
+      const cleanOrigin = requestOrigin.replace(/\/$/, '');
+
+      // Allow if exact match with configured CORS_ORIGIN
+      if (allowedOrigins.includes(cleanOrigin)) {
+        return callback(null, true);
+      }
+
+      // Automatically allow all Vercel production and preview subdomains (*.vercel.app)
+      if (/^https:\/\/.*\.vercel\.app$/.test(cleanOrigin)) {
+        return callback(null, true);
+      }
+
+      // Allow localhost in development
+      if (/^http:\/\/localhost(:\d+)?$/.test(cleanOrigin)) {
+        return callback(null, true);
+      }
+
+      callback(null, false);
+    },
+    credentials: true, // required for JWT HTTP-only cookies
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'Cookie',
+    ],
+    exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Global validation pipe: automatically validates incoming DTOs
