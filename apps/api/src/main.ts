@@ -44,9 +44,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = configService.get<number>('PORT', 3001);
-  await app.listen(port);
-  console.log(`🚀 CareerCraft API running on http://localhost:${port}`);
-  console.log(`📚 Swagger docs at http://localhost:${port}/api/docs`);
+  // Safely parse port (guard against malformed env vars) and bind to 0.0.0.0 for cloud hosting
+  const rawPort = configService.get<string | number>('PORT', 3001);
+  const parsedPort = typeof rawPort === 'number' ? rawPort : parseInt(String(rawPort), 10);
+  const port = Number.isInteger(parsedPort) && parsedPort > 0 ? parsedPort : 3001;
+
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 CareerCraft API running on http://0.0.0.0:${port}`);
+  console.log(`📚 Swagger docs at http://0.0.0.0:${port}/api/docs`);
 }
 bootstrap();
