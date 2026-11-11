@@ -58,7 +58,7 @@ export function PersonalForm({ data, onChange }: PersonalFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Input
           label="City / State"
           placeholder="e.g. San Francisco, CA"
@@ -71,6 +71,12 @@ export function PersonalForm({ data, onChange }: PersonalFormProps) {
           placeholder="e.g. United States"
           value={data.country || ''}
           onChange={(e) => handleChange('country', e.target.value)}
+        />
+        <Input
+          label="Profile Photo / Avatar URL"
+          placeholder="https://example.com/photo.jpg"
+          value={data.avatarUrl || ''}
+          onChange={(e) => handleChange('avatarUrl', e.target.value)}
         />
       </div>
 

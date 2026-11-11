@@ -9,6 +9,22 @@ async function main() {
   // 1. Seed CV Templates
   const cvTemplates = [
     {
+      slug: 'executive-banner',
+      name: 'Executive Banner',
+      description: 'Header banner with photo, centered pill section headers, two-column timeline, and categorized skills grid.',
+      layout: 'executive-banner',
+      thumbnail: '/templates/cv/executive-banner.png',
+      isActive: true,
+    },
+    {
+      slug: 'modern-edge',
+      name: 'Modern Edge',
+      description: 'Sleek tech lead layout with gradient top accent, dual-column metrics split, and skill tags.',
+      layout: 'modern-edge',
+      thumbnail: '/templates/cv/modern-edge.png',
+      isActive: true,
+    },
+    {
       slug: 'classic-professional',
       name: 'Classic Professional',
       description: 'Traditional, elegant single-column format optimized for corporate, finance, and ATS friendliness.',
@@ -69,6 +85,22 @@ async function main() {
 
   // 2. Seed Portfolio Templates
   const portfolioTemplates = [
+    {
+      slug: 'developer-showcase',
+      name: 'Developer Showcase Pro',
+      description: 'Modern dark tech portfolio with ambient glows, live availability indicator, project showcase, and categorized stack.',
+      layout: 'developer-showcase',
+      thumbnail: '/templates/portfolio/developer-showcase.png',
+      isActive: true,
+    },
+    {
+      slug: 'bento-modern',
+      name: 'Bento Modern Grid',
+      description: 'Apple/Linear-style interactive bento grid showcasing bio, live status, project cards, and tech stack matrix.',
+      layout: 'bento-grid',
+      thumbnail: '/templates/portfolio/bento-modern.png',
+      isActive: true,
+    },
     {
       slug: 'minimal-developer',
       name: 'Minimal Developer',

@@ -23,6 +23,20 @@ import {
 
 const CV_TEMPLATES = [
   {
+    name: 'Executive Banner',
+    slug: 'executive-banner',
+    desc: 'Header banner with photo, centered pill section headers, two-column timeline, and categorized skills grid.',
+    tag: 'Executive',
+    accent: 'border-slate-700',
+  },
+  {
+    name: 'Modern Edge',
+    slug: 'modern-edge',
+    desc: 'Sleek tech lead layout with gradient top accent, dual-column metrics split, and skill tags.',
+    tag: 'Tech Lead',
+    accent: 'border-cyan-500',
+  },
+  {
     name: 'Classic Professional',
     slug: 'classic-professional',
     desc: 'ATS-conscious single-column elegance for corporate and finance roles.',
@@ -67,6 +81,16 @@ const CV_TEMPLATES = [
 ];
 
 const PORTFOLIO_TEMPLATES = [
+  {
+    name: 'Developer Showcase Pro',
+    desc: 'Modern dark developer showcase with ambient glow, live availability badge, and categorized skills.',
+    badge: 'Popular',
+  },
+  {
+    name: 'Bento Modern Grid',
+    desc: 'Interactive Apple/Linear-style bento grid featuring project spotlights, stats, and matrix stack.',
+    badge: 'Bento Grid',
+  },
   {
     name: 'Minimal Developer',
     desc: 'Terminal-inspired clean layout focusing on stack, GitHub, and live apps.',

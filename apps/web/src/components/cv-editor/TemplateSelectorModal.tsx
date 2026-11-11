@@ -17,6 +17,22 @@ interface TemplateSelectorModalProps {
 
 const FALLBACK_TEMPLATES: CvTemplate[] = [
   {
+    id: 'executive-banner',
+    slug: 'executive-banner',
+    name: 'Executive Banner',
+    description: 'Header banner with photo, centered pill section headers, two-column timeline, and categorized skills grid.',
+    layout: 'executive-banner',
+    isActive: true,
+  },
+  {
+    id: 'modern-edge',
+    slug: 'modern-edge',
+    name: 'Modern Edge',
+    description: 'Sleek tech lead layout with gradient top accent, dual-column metrics split, and skill tags.',
+    layout: 'modern-edge',
+    isActive: true,
+  },
+  {
     id: 'classic-professional',
     slug: 'classic-professional',
     name: 'Classic Professional',

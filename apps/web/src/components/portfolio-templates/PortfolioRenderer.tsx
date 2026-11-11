@@ -8,6 +8,8 @@ import { ProfessionalCorporate } from './ProfessionalCorporate';
 import { DesignerVisual } from './DesignerVisual';
 import { StudentPortfolio } from './StudentPortfolio';
 import { ModernPersonalBrand } from './ModernPersonalBrand';
+import { DeveloperShowcase } from './DeveloperShowcase';
+import { BentoModern } from './BentoModern';
 
 export function PortfolioRenderer({
   data,
@@ -16,9 +18,15 @@ export function PortfolioRenderer({
   data: PublicPortfolioData;
   templateSlug?: string;
 }) {
-  const activeSlug = templateSlug || data.template?.slug || 'minimal-developer';
+  const activeSlug = templateSlug || data.template?.slug || 'developer-showcase';
 
   switch (activeSlug) {
+    case 'developer-showcase':
+    case 'tech-folio':
+      return <DeveloperShowcase data={data} />;
+    case 'bento-modern':
+    case 'bento':
+      return <BentoModern data={data} />;
     case 'dark-creative':
       return <DarkCreative data={data} />;
     case 'professional-corporate':
@@ -30,7 +38,8 @@ export function PortfolioRenderer({
     case 'modern-personal-brand':
       return <ModernPersonalBrand data={data} />;
     case 'minimal-developer':
-    default:
       return <MinimalDeveloper data={data} />;
+    default:
+      return <DeveloperShowcase data={data} />;
   }
 }

@@ -8,6 +8,8 @@ import { MinimalClean } from './MinimalClean';
 import { CreativeAccent } from './CreativeAccent';
 import { DeveloperTechnical } from './DeveloperTechnical';
 import { StudentGraduate } from './StudentGraduate';
+import { ExecutiveBanner } from './ExecutiveBanner';
+import { ModernEdge } from './ModernEdge';
 
 interface CvRendererProps {
   content: CvContent;
@@ -16,11 +18,24 @@ interface CvRendererProps {
   className?: string;
 }
 
-export function CvRenderer({ content, styling, templateSlug = 'classic-professional', className = '' }: CvRendererProps) {
-  const normalizedSlug = templateSlug?.toLowerCase() || 'classic-professional';
+export function CvRenderer({
+  content,
+  styling,
+  templateSlug = 'executive-banner',
+  className = '',
+}: CvRendererProps) {
+  const normalizedSlug = templateSlug?.toLowerCase() || 'executive-banner';
 
   return (
-    <div className={`cv-printable-page bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200/80 transition-all ${className}`}>
+    <div
+      className={`cv-printable-page bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200/80 transition-all ${className}`}
+    >
+      {(normalizedSlug === 'executive-banner' || normalizedSlug === 'executive') && (
+        <ExecutiveBanner content={content} styling={styling} />
+      )}
+      {(normalizedSlug === 'modern-edge' || normalizedSlug === 'edge') && (
+        <ModernEdge content={content} styling={styling} />
+      )}
       {normalizedSlug === 'classic-professional' && (
         <ClassicProfessional content={content} styling={styling} />
       )}
@@ -39,8 +54,12 @@ export function CvRenderer({ content, styling, templateSlug = 'classic-professio
       {normalizedSlug === 'student-graduate' && (
         <StudentGraduate content={content} styling={styling} />
       )}
-      {/* Fallback to classic if slug didn't match */}
+      {/* Fallback */}
       {![
+        'executive-banner',
+        'executive',
+        'modern-edge',
+        'edge',
         'classic-professional',
         'modern-corporate',
         'minimal',
@@ -48,7 +67,7 @@ export function CvRenderer({ content, styling, templateSlug = 'classic-professio
         'developer',
         'student-graduate',
       ].includes(normalizedSlug) && (
-        <ClassicProfessional content={content} styling={styling} />
+        <ExecutiveBanner content={content} styling={styling} />
       )}
     </div>
   );
