@@ -17,6 +17,15 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers.set('Content-Type', 'application/json');
   }
 
+  // Attach Bearer token from localStorage for cross-domain deployments (e.g. Vercel frontend + Render backend)
+  // where third-party cookies are blocked or partitioned by browsers.
+  if (typeof window !== 'undefined' && !headers.has('Authorization')) {
+    const token = localStorage.getItem('careercraft_token');
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+  }
+
   // Enforce a 12-second timeout to prevent indefinite browser hangs
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 12000);

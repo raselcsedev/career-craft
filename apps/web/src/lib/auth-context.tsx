@@ -48,7 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await api.get<{ user: User }>('/api/v1/auth/me');
       setUser(res.user);
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.status === 401 && typeof window !== 'undefined') {
+        localStorage.removeItem('careercraft_token');
+      }
       setUser(null);
     } finally {
       setLoading(false);
@@ -60,12 +63,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await api.post<{ user: User }>('/api/v1/auth/login', { email, password });
+    const res = await api.post<{ user: User; accessToken?: string }>('/api/v1/auth/login', { email, password });
+    if (res?.accessToken && typeof window !== 'undefined') {
+      localStorage.setItem('careercraft_token', res.accessToken);
+    }
     setUser(res.user);
   };
 
   const register = async (data: { email: string; password: string; firstName?: string; lastName?: string }) => {
-    const res = await api.post<{ user: User }>('/api/v1/auth/register', data);
+    const res = await api.post<{ user: User; accessToken?: string }>('/api/v1/auth/register', data);
+    if (res?.accessToken && typeof window !== 'undefined') {
+      localStorage.setItem('careercraft_token', res.accessToken);
+    }
     setUser(res.user);
   };
 
@@ -73,6 +82,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await api.post('/api/v1/auth/logout');
     } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('careercraft_token');
+      }
       setUser(null);
     }
   };

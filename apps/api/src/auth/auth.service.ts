@@ -73,8 +73,18 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
+  private isProduction(): boolean {
+    const nodeEnv = this.configService.get<string>('NODE_ENV');
+    return (
+      nodeEnv === 'production' ||
+      Boolean(process.env.RENDER) ||
+      Boolean(process.env.VERCEL) ||
+      Boolean(process.env.PORT && process.env.DATABASE_URL?.includes('tidbcloud.com'))
+    );
+  }
+
   setAuthCookie(res: Response, token: string) {
-    const isProd = this.configService.get<string>('NODE_ENV') === 'production';
+    const isProd = this.isProduction();
     res.cookie('access_token', token, {
       httpOnly: true,
       secure: isProd,
@@ -85,7 +95,7 @@ export class AuthService {
   }
 
   clearAuthCookie(res: Response) {
-    const isProd = this.configService.get<string>('NODE_ENV') === 'production';
+    const isProd = this.isProduction();
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: isProd,
