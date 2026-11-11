@@ -17,26 +17,43 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    credentials: 'include', // sends and receives HTTP-only cookies
-  });
+  // Enforce a 12-second timeout to prevent indefinite browser hangs
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-  const contentType = response.headers.get('content-type');
-  let data: any = null;
-  if (contentType && contentType.includes('application/json')) {
-    data = await response.json();
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      credentials: 'include', // sends and receives HTTP-only cookies
+      signal: options.signal || controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    const contentType = response.headers.get('content-type');
+    let data: any = null;
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    }
+
+    if (!response.ok) {
+      const errorMessage =
+        data?.message ||
+        (Array.isArray(data?.message)
+          ? data.message.join(', ')
+          : `Request failed with status ${response.status}`);
+      throw new ApiError(response.status, errorMessage, data);
+    }
+
+    return data as T;
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new ApiError(408, 'Request timed out. Please check if the API server is running on port 3001.');
+    }
+    throw err;
   }
-
-  if (!response.ok) {
-    const errorMessage =
-      data?.message ||
-      (Array.isArray(data?.message) ? data.message.join(', ') : `Request failed with status ${response.status}`);
-    throw new ApiError(response.status, errorMessage, data);
-  }
-
-  return data as T;
 }
 
 export const api = {

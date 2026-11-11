@@ -68,7 +68,11 @@ export default function CvsDashboardPage() {
       const res = await api.get<{ cvs: CvDocument[] }>('/cvs');
       setCvs(res.cvs || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to load CV documents.');
+      if (err.status === 401) {
+        router.push('/login');
+        return;
+      }
+      setError(err.message || 'Failed to load CV documents. Ensure the backend API is running on port 3001.');
     } finally {
       setLoading(false);
     }
@@ -264,7 +268,14 @@ export default function CvsDashboardPage() {
         </Button>
       </div>
 
-      {error && <Alert variant="error" title="Error">{error}</Alert>}
+      {error && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-300 text-sm">
+          <span>{error}</span>
+          <Button size="sm" variant="outline" onClick={loadCvs}>
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Loading Skeleton */}
       {loading ? (
