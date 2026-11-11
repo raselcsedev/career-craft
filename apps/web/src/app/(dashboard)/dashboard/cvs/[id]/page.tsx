@@ -39,6 +39,10 @@ import {
   Award,
   ChevronDown,
   FileDown,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 
 type TabSection =
@@ -66,6 +70,8 @@ export default function CvEditorPage() {
   // UI State
   const [activeSection, setActiveSection] = useState<TabSection>('personal');
   const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
+  const [previewLayout, setPreviewLayout] = useState<'split' | 'wide' | 'full'>('wide');
+  const [zoomScale, setZoomScale] = useState<number>(100);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
@@ -446,13 +452,17 @@ export default function CvEditorPage() {
         </button>
       </div>
 
-      {/* Main Workspace Layout (Side-by-side on desktop) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Side: Forms & Section Tabs (hidden on mobile if viewing preview) */}
+      {/* Main Workspace Layout (Side-by-side on desktop, full width) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full transition-all">
+        {/* Left Side: Forms & Section Tabs (hidden on mobile if viewing preview, or if preview layout is full) */}
         <div
-          className={`no-print lg:col-span-6 space-y-4 ${
-            mobileView === 'preview' ? 'hidden lg:block' : 'block'
-          }`}
+          className={`no-print space-y-4 ${
+            previewLayout === 'full'
+              ? 'hidden'
+              : previewLayout === 'wide'
+                ? 'lg:col-span-5 xl:col-span-5 2xl:col-span-4'
+                : 'lg:col-span-6 xl:col-span-6'
+          } ${mobileView === 'preview' ? 'hidden lg:block' : 'block'}`}
         >
           {/* Section Navigation Tabs — 2x4 responsive grid so all 8 sections are always visible & clickable */}
           <div className="bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-xl p-2 shadow-xs grid grid-cols-2 sm:grid-cols-4 gap-1.5 transition-colors">
@@ -612,26 +622,108 @@ export default function CvEditorPage() {
         {/* Right Side: Live Interactive Resume Preview (always visible on desktop or when toggled on mobile) */}
         <div
           id="cv-printable-area"
-          className={`lg:col-span-6 ${
+          className={`${
+            previewLayout === 'full'
+              ? 'col-span-12 max-w-4xl mx-auto w-full'
+              : previewLayout === 'wide'
+                ? 'lg:col-span-7 xl:col-span-7 2xl:col-span-8'
+                : 'lg:col-span-6 xl:col-span-6'
+          } ${
             mobileView === 'editor' ? 'hidden lg:block' : 'block'
-          } print:block print:w-full print:m-0 print:p-0`}
+          } print:block print:w-full print:m-0 print:p-0 transition-all duration-300`}
         >
           {/* Preview Container Bar (hidden in print) */}
-          <div className="no-print flex items-center justify-between mb-2 px-1 text-xs text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1.5 font-medium">
+          <div className="no-print flex flex-wrap items-center justify-between gap-2 mb-2.5 px-1 text-xs text-slate-500 dark:text-slate-400">
+            <span className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
               <Sparkles className="w-3.5 h-3.5 text-[#005A9C] dark:text-[#60C1E5]" />
               Live Preview ({template?.name || 'Classic Professional'})
             </span>
-            <span className="text-slate-400 dark:text-slate-500">Updates live as you type</span>
+
+            {/* Viewport & Zoom Controls */}
+            <div className="flex items-center gap-2">
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-lg p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setZoomScale((s) => Math.max(70, s - 10))}
+                  className="p-1 hover:bg-slate-100 dark:hover:bg-navy-800 rounded text-slate-600 dark:text-slate-300"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="px-1.5 text-[11px] font-mono font-medium text-slate-600 dark:text-slate-300 min-w-[36px] text-center">
+                  {zoomScale}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoomScale((s) => Math.min(130, s + 10))}
+                  className="p-1 hover:bg-slate-100 dark:hover:bg-navy-800 rounded text-slate-600 dark:text-slate-300"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Layout Mode Buttons (Wide / Full Preview) */}
+              <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-[#101f38] border border-slate-200 dark:border-[#1B365D] rounded-lg p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setPreviewLayout('split')}
+                  className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
+                    previewLayout === 'split'
+                      ? 'bg-[#005A9C] text-white'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800'
+                  }`}
+                  title="50:50 Split View"
+                >
+                  50:50
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewLayout('wide')}
+                  className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
+                    previewLayout === 'wide'
+                      ? 'bg-[#005A9C] text-white'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800'
+                  }`}
+                  title="Wide Preview View (More space for template)"
+                >
+                  Wide
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewLayout((p) => (p === 'full' ? 'wide' : 'full'))}
+                  className={`p-1 rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 transition-colors ${
+                    previewLayout === 'full' ? 'bg-[#005A9C] text-white hover:bg-[#005A9C]' : ''
+                  }`}
+                  title={previewLayout === 'full' ? 'Exit Full Preview' : 'Full Preview Mode'}
+                >
+                  {previewLayout === 'full' ? (
+                    <Minimize2 className="w-3.5 h-3.5" />
+                  ) : (
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Rendered CV Document */}
-          <div className="print-container overflow-hidden rounded-xl bg-slate-100 dark:bg-[#0b1526] p-2 sm:p-4 border border-slate-200/80 dark:border-[#1B365D]/80 shadow-inner transition-colors">
-            <CvRenderer
-              content={content}
-              styling={styling || undefined}
-              templateSlug={template?.slug || 'classic-professional'}
-            />
+          {/* Rendered CV Document (Sticky, Centered & Scalable) */}
+          <div className="sticky top-4 print-container overflow-x-auto rounded-2xl bg-slate-100/90 dark:bg-[#0b1526] p-3 sm:p-6 border border-slate-200/80 dark:border-[#1B365D]/80 shadow-inner transition-all flex justify-center">
+            <div
+              className="w-full transition-transform origin-top flex justify-center"
+              style={{
+                transform: zoomScale !== 100 ? `scale(${zoomScale / 100})` : undefined,
+                maxWidth: previewLayout === 'full' ? '850px' : '800px',
+              }}
+            >
+              <CvRenderer
+                content={content}
+                styling={styling || undefined}
+                templateSlug={template?.slug || 'classic-professional'}
+                className="w-full shadow-2xl"
+              />
+            </div>
           </div>
         </div>
       </div>

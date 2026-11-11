@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8 w-full">
       <div className="flex items-center justify-between">
         <div>
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#A0E0EF]/25 text-[#005A9C] dark:text-[#60C1E5] text-xs font-semibold mb-1">

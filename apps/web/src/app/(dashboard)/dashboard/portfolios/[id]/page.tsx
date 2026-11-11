@@ -383,10 +383,10 @@ export default function PortfolioEditorPage() {
       </div>
 
       {/* Editor & Preview Split Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[750px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[750px] w-full">
         {/* Left Side: Editor Form */}
         <div
-          className={`lg:col-span-5 space-y-4 ${
+          className={`lg:col-span-4 xl:col-span-4 space-y-4 ${
             mobileMode === 'preview' ? 'hidden lg:block' : 'block'
           }`}
         >
@@ -567,11 +567,11 @@ export default function PortfolioEditorPage() {
 
         {/* Right Side: Live Interactive Preview */}
         <div
-          className={`lg:col-span-7 ${
+          className={`lg:col-span-8 xl:col-span-8 ${
             mobileMode === 'editor' ? 'hidden lg:block' : 'block'
           }`}
         >
-          <div className="sticky top-20 bg-gray-100 rounded-2xl border border-gray-200 p-2 sm:p-4 shadow-inner">
+          <div className="sticky top-20 bg-slate-100 dark:bg-navy-900 rounded-2xl border border-slate-200 dark:border-navy-700 p-2 sm:p-4 shadow-inner">
             <div className="flex items-center justify-between px-2 pb-2 text-xs text-gray-500">
               <span className="font-semibold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <Eye className="w-3.5 h-3.5 text-indigo-600" />
@@ -584,7 +584,7 @@ export default function PortfolioEditorPage() {
 
             {/* Viewport Frame */}
             <div
-              className={`mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-300 max-h-[750px] overflow-y-auto ${
+              className={`mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-300 max-h-[85vh] overflow-y-auto ${
                 previewDevice === 'mobile' ? 'max-w-sm' : 'w-full'
               }`}
             >
