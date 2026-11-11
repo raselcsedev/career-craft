@@ -330,19 +330,69 @@ export default function CvsDashboardPage() {
                   </Badge>
                 </div>
 
-                {/* Visual Document Mockup Preview Box */}
-                <Link href={`/dashboard/cvs/${doc.id}`}>
-                  <div className="w-full aspect-[16/10] bg-slate-50 dark:bg-[#0b1526] border border-slate-100 dark:border-navy-700/60 rounded-xl p-3.5 flex flex-col justify-between group-hover:bg-[#A0E0EF]/10 dark:group-hover:bg-[#005A9C]/15 transition-colors cursor-pointer mb-4 overflow-hidden relative">
-                    <div className="space-y-2">
-                      <div className="w-2/5 h-2 bg-slate-300 dark:bg-navy-600 rounded-xs" />
-                      <div className="w-1/3 h-1.5 bg-slate-200 dark:bg-navy-700 rounded-xs" />
-                      <div className="pt-2 space-y-1">
-                        <div className="w-full h-1 bg-slate-200 dark:bg-navy-700 rounded-xs" />
-                        <div className="w-5/6 h-1 bg-slate-200 dark:bg-navy-700 rounded-xs" />
-                        <div className="w-4/6 h-1 bg-slate-200 dark:bg-navy-700 rounded-xs" />
+                {/* Visual Document Card Preview Box */}
+                <Link href={`/dashboard/cvs/${doc.id}`} className="block">
+                  <div className="w-full min-h-[160px] bg-slate-50 dark:bg-[#0b1526] border border-slate-200/80 dark:border-navy-700/80 rounded-xl p-3 flex flex-col justify-between group-hover:border-[#005A9C] dark:group-hover:border-[#60C1E5] group-hover:shadow-xs transition-all cursor-pointer mb-4 overflow-hidden relative">
+                    {/* Mini resume document mockup */}
+                    <div className="bg-white dark:bg-[#101f38] rounded-lg p-3 shadow-2xs border border-slate-100 dark:border-navy-700/50 flex-1 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        {/* Candidate name & headline */}
+                        <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-navy-700/40 pb-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div
+                              className="w-2.5 h-2.5 rounded-full shrink-0"
+                              style={{ backgroundColor: doc.styling?.primaryColor || '#005A9C' }}
+                            />
+                            <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                              {doc.content?.personalInfo?.fullName || doc.title || 'Untitled Resume'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[45%] text-right font-medium">
+                            {doc.content?.personalInfo?.headline || 'CV Document'}
+                          </span>
+                        </div>
+
+                        {/* Summary / role snippet */}
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                          {doc.content?.summary ||
+                            (doc.content?.experiences && doc.content.experiences.length > 0
+                              ? `${doc.content.experiences[0].position} at ${doc.content.experiences[0].company}`
+                              : 'Professional resume document ready to customize, preview, and download.')}
+                        </p>
+
+                        {/* Top skills badges */}
+                        {doc.content?.skills && doc.content.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-0.5">
+                            {doc.content.skills.slice(0, 4).map((s: any, idx: number) => (
+                              <span
+                                key={idx}
+                                className="text-[9px] px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-navy-800 text-slate-700 dark:text-slate-300 font-medium truncate max-w-[100px]"
+                              >
+                                {typeof s === 'string' ? s : s.name}
+                              </span>
+                            ))}
+                            {doc.content.skills.length > 4 && (
+                              <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium self-center">
+                                +{doc.content.skills.length - 4} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Document stats */}
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 pt-2 mt-2 border-t border-slate-100 dark:border-navy-700/40">
+                        <span>
+                          {doc.content?.experiences?.length || 0} exp • {doc.content?.educations?.length || 0} edu
+                        </span>
+                        <span className="capitalize font-semibold text-[#005A9C] dark:text-[#60C1E5]">
+                          {doc.template?.name || doc.template?.slug || 'Resume'}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium pt-2 border-t border-slate-200/50 dark:border-navy-700/50">
+
+                    {/* Footer bar */}
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium pt-2.5 mt-2 border-t border-slate-200/50 dark:border-navy-700/50">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         Updated {formatDate(doc.updatedAt)}
